@@ -775,22 +775,25 @@
     }
   }
 
-  function renderAdminTable() {
-    const body = document.getElementById("adminBody");
-    body.innerHTML = "";
-    if (currentRole === "visitor") return;
+function renderAdminTable() {
+  const body = document.getElementById("adminBody");
+  body.innerHTML = "";
+  if (currentRole === "visitor") return;
 
-    const list = requestsForDate(currentDateKey);
-    if (!list.length) {
-      const tr = document.createElement("tr");
-      const td = document.createElement("td");
-      td.colSpan = 6;
-      td.className = "empty-row";
-      td.textContent = "No requests for this date.";
-      tr.appendChild(td);
-      body.appendChild(tr);
-      return;
-    }
+  const list = allRequests;   // <-- show ALL requests for EA/Director
+  if (!list.length) {
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+    td.colSpan = 6;
+    td.className = "empty-row";
+    td.textContent = "No requests recorded yet.";
+    tr.appendChild(td);
+    body.appendChild(tr);
+    return;
+  }
+  ...
+}
+
 
     list.forEach(r => {
       const tr = document.createElement("tr");
