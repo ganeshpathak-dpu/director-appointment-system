@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Director Appointment System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f3f4f6;
+      color: #111827;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+    header {
+      margin-bottom: 16px;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 8px;
+    }
+    header h1 {
+      margin: 0 0 4px;
+      font-size: 1.4rem;
+    }
+    header p {
+      margin: 0;
+      font-size: 0.85rem;
+      color: #4b5563;
+    }
+    .top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .top-bar-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+    }
+    input[type="date"],
+    input[type="password"],
+    select {
+      padding: 4px 8px;
+      border-radius: 4px;
+      border: 1px solid #d1d5db;
+      font-size: 0.85rem;
+    }
+    .btn-small {
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+      padding: 4px 10px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      background: #2563eb;
+      color: #fff;
+    }
+    .btn-small:active {
+      transform: scale(0.98);
+    }
+    .current-role {
+      font-size: 0.8rem;
+      color: #2563eb;
+      font-weight: 500;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 12px;
+      border: 1px solid #e5e7eb;
+    }
+    .card h2 {
+      margin: 0 0 6px;
+      font-size: 1rem;
+    }
+    .subtext {
+      margin: 0 0 8px;
+      font-size: 0.8rem;
+      color: #6b7280;
+    }
+    .schedule-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: #374151;
+      margin-bottom: 4px;
+    }
+    .schedule-date {
+      font-weight: 500;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+    th, td {
+      padding: 6px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f9fafb;
+      font-weight: 600;
+      color: #374151;
+    }
+    .empty-text {
+      font-size: 0.8rem;
+      color: #6b7280;
+      padding: 6px 0;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #374151;
+    }
+    input[type="text"],
+    input[type="time"],
+    textarea {
+      width: 100%;
+      padding: 6px 8px;
+      border-radius: 4px;
+      border: 1px solid #d1d5db;
+      font-size: 0.85rem;
+      resize: vertical;
+    }
+    textarea {
+      min-height: 60px;
+      max-height: 120px;
+    }
+    .row-two {
+      display: flex;
+      gap: 8px;
+    }
+    .row-two > div {
+      flex: 1;
+    }
+    .btn-main {
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      background: #2563eb;
+      color: #fff;
+      align-self: flex-start;
+      margin-top: 4px;
+    }
+    .btn-main:active {
+      transform: scale(0.98);
+    }
+    .alert {
+      margin-top: 6px;
+      padding: 6px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      display: none;
+    }
+    .alert-success {
+      background: #ecfdf5;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+    }
+    .alert-error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #7f1d1d;
+    }
+    .requests-box-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      margin-top: 10px;
+      margin-bottom: 4px;
+    }
+    .link-small {
+      font-size: 0.75rem;
+      color: #2563eb;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .requests-list {
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      padding: 6px;
+      max-height: 180px;
+      overflow-y: auto;
+      background: #f9fafb;
+      font-size: 0.8rem;
+    }
+    .request-item {
+      padding: 4px 0;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .request-item:last-child {
+      border-bottom: none;
+    }
+    .request-name {
+      font-weight: 600;
+    }
+    .request-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .status-text {
+      font-size: 0.75rem;
+    }
+    .status-pending {
+      color: #92400e;
+    }
+    .status-ea {
+      color: #1d4ed8;
+    }
+    .status-dir {
+      color: #15803d;
+    }
+    .status-rej {
+      color: #b91c1c;
+    }
+    .admin-note {
+      font-size: 0.75rem;
+      color: #6b7280;
+      margin-top: 6px;
+    }
+    .btn-tag {
+      border: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+    .btn-approve {
+      background: #dcfce7;
+      color: #166534;
+    }
+    .btn-reject {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+    @media (max-width: 600px) {
+      .top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .row-two {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Director Appointment System</h1>
+    <p>Office of the Director – Dr. D. Y. Patil B-School (DPGU)</p>
+
+    <div class="top-bar">
+      <div class="top-bar-group">
+        <span>Date:</span>
+        <input type="date" id="datePicker">
+      </div>
+
+      <div class="top-bar-group">
+        <span>Login as:</span>
+        <select id="roleSelect">
+          <option value="visitor">Visitor</option>
+          <option value="ea">Executive Assistant</option>
+          <option value="director">Director</option>
+        </select>
+        <input type="password" id="rolePin" placeholder="PIN" style="width:80px;">
+        <button class="btn-small" id="setRoleBtn">Login</button>
+        <span class="current-role" id="currentRoleLabel">(Visitor view)</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Schedule -->
+  <section class="card">
+    <div class="schedule-header">
+      <h2>Director’s Schedule</h2>
+      <span class="schedule-date" id="scheduleDateLabel"></span>
+    </div>
+    <p class="subtext">This is a read-only view of the Director’s plan for the selected date.</p>
+    <div id="scheduleEmpty" class="empty-text" style="display:none;">
+      No schedule added for this date yet.
+    </div>
+    <table id="scheduleTable">
+      <thead>
+      <tr>
+        <th style="width:20%;">Time</th>
+        <th style="width:25%;">Person / Dept</th>
+        <th>Agenda</th>
+      </tr>
+      </thead>
+      <tbody id="scheduleBody">
+      <!-- Filled by JS -->
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Visitor Form -->
+  <section class="card">
+    <h2>Appointment Request (Visitor)</h2>
+    <p class="subtext">
+      Please fill this form to request an appointment. First the Executive Assistant will review, then the Director will approve.
+    </p>
+
+    <form id="checkinForm">
+      <div class="row-two">
+        <div>
+          <label for="visitorName">Your full name *</label>
+          <input type="text" id="visitorName" required>
+        </div>
+        <div>
+          <label for="visitorDept">Department / Organisation *</label>
+          <input type="text" id="visitorDept" required>
+        </div>
+      </div>
+
+      <div class="row-two">
+        <div>
+          <label for="preferredTime">Preferred time (optional)</label>
+          <input type="time" id="preferredTime">
+        </div>
+        <div>
+          <label for="urgency">Urgency *</label>
+          <select id="urgency" required>
+            <option value="">Select…</option>
+            <option value="normal">Normal</option>
+            <option value="urgent">Urgent</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label for="purpose">Purpose of meeting *</label>
+        <textarea id="purpose" required></textarea>
+      </div>
+
+      <button type="submit" class="btn-main">Submit Request</button>
+
+      <div id="formSuccess" class="alert alert-success">
+        Request submitted. You will be informed by the Director’s office.
+      </div>
+      <div id="formError" class="alert alert-error">
+        Please fill all required fields.
+      </div>
+    </form>
+
+    <div class="requests-box-header">
+      <span>Requests for this date (all statuses):</span>
+      <span id="clearRequests" class="link-small">Clear local list</span>
+    </div>
+    <div id="requestsList" class="requests-list">
+      <!-- Filled by JS -->
+    </div>
+  </section>
+
+  <!-- Admin Panel -->
+  <section class="card" id="adminSection" style="display:none;">
+    <h2>Approval Panel (EA / Director)</h2>
+    <p class="subtext">
+      Level 1: Executive Assistant approves or rejects.<br>
+      Level 2: Director approves or rejects EA-approved requests.
+    </p>
+
+    <table id="adminTable">
+      <thead>
+      <tr>
+        <th style="width:15%;">Time</th>
+        <th style="width:25%;">Visitor</th>
+        <th>Purpose</th>
+        <th style="width:20%;">Status</th>
+        <th style="width:20%;">Actions</th>
+      </tr>
+      </thead>
+      <tbody id="adminBody">
+      <!-- Filled by JS -->
+      </tbody>
+    </table>
+
+    <p class="admin-note">
+      Demo PINs (change later in code): EA = 1111, Director = 2222.<br>
+      Data is stored only in this browser (localStorage). For full campus use, this must later connect to a shared system.
+    </p>
+  </section>
+</div>
+
+<script>
+  // ---------- Role handling ----------
+  let currentRole = 'visitor'; // 'visitor' | 'ea' | 'director'
+  const ROLE_PINS = { ea: '1111', director: '2222' };
+
+  function updateRoleUI() {
+    const label = document.getElementById('currentRoleLabel');
+    const adminSection = document.getElementById('adminSection');
+    const dateKey = document.getElementById('datePicker').value;
+
+    if (currentRole === 'visitor') {
+      label.textContent = '(Visitor view)';
+      adminSection.style.display = 'none';
+    } else if (currentRole === 'ea') {
+      label.textContent = '(EA view – Level 1 approval)';
+      adminSection.style.display = 'block';
+    } else {
+      label.textContent = '(Director view – Final approval)';
+      adminSection.style.display = 'block';
+    }
+
+    renderRequests(dateKey);
+    renderAdminTable(dateKey);
+  }
+
+  document.getElementById('setRoleBtn').addEventListener('click', () => {
+    const sel = document.getElementById('roleSelect').value;
+    const pin = document.getElementById('rolePin').value.trim();
+
+    if (sel === 'visitor') {
+      currentRole = 'visitor';
+      document.getElementById('rolePin').value = '';
+      updateRoleUI();
+      return;
+    }
+
+    const expected = ROLE_PINS[sel];
+    if (pin === expected) {
+      currentRole = sel;
+      document.getElementById('rolePin').value = '';
+      updateRoleUI();
+    } else {
+      alert('Incorrect PIN.');
+    }
+  });
+
+  // ---------- Schedule Data ----------
+  const scheduleData = {};
+
+  function toKeyDate(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+
+  function renderSchedule(dateKey) {
+    const body = document.getElementById('scheduleBody');
+    const empty = document.getElementById('scheduleEmpty');
+    const label = document.getElementById('scheduleDateLabel');
+    body.innerHTML = '';
+
+    const d = new Date(dateKey);
+    if (!isNaN(d.getTime())) {
+      const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+      label.textContent = d.toLocaleDateString(undefined, options);
+    } else {
+      label.textContent = '';
+    }
+
+    const list = scheduleData[dateKey] || [];
+    if (!list.length) {
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+
+    list.forEach(item => {
+      const tr = document.createElement('tr');
+      const tdTime = document.createElement('td');
+      const tdWho = document.createElement('td');
+      const tdAgenda = document.createElement('td');
+
+      tdTime.textContent = item.time;
+      tdWho.textContent = item.who;
+      tdAgenda.textContent = item.agenda;
+
+      tr.appendChild(tdTime);
+      tr.appendChild(tdWho);
+      tr.appendChild(tdAgenda);
+      body.appendChild(tr);
+    });
+  }
+
+  // ---------- Requests storage ----------
+  function storageKey(dateKey) {
+    return 'director_requests_' + dateKey;
+  }
+  function getRequests(dateKey) {
+    const raw = localStorage.getItem(storageKey(dateKey));
+    if (!raw) return [];
+    try {
+      const arr = JSON.parse(raw) || [];
+      return arr.map(r => {
+        if (!r.status) r.status = 'pending';
+        return r;
+      });
+    } catch {
+      return [];
+    }
+  }
+  function saveRequests(dateKey, requests) {
+    localStorage.setItem(storageKey(dateKey), JSON.stringify(requests));
+  }
+  function generateId() {
+    return 'REQ_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+  }
+
+  // ---------- Visitor view: requests list ----------
+  function renderRequests(dateKey) {
+    const box = document.getElementById('requestsList');
+    box.innerHTML = '';
+
+    const requests = getRequests(dateKey);
+    if (!requests.length) {
+      box.textContent = 'No requests for this date yet.';
+      return;
+    }
+
+    requests.forEach(req => {
+      const div = document.createElement('div');
+      div.className = 'request-item';
+
+      const top = document.createElement('div');
+      top.className = 'request-line';
+      const name = document.createElement('span');
+      name.className = 'request-name';
+      name.textContent = req.name;
+
+      const time = document.createElement('span');
+      time.textContent = req.preferredTime || '-';
+
+      top.appendChild(name);
+      top.appendChild(time);
+
+      const dept = document.createElement('div');
+      dept.textContent = req.dept;
+
+      const status = document.createElement('div');
+      status.className = 'status-text';
+      if (req.status === 'pending') {
+        status.classList.add('status-pending');
+        status.textContent = 'Status: Pending (EA review)';
+      } else if (req.status === 'eaApproved') {
+        status.classList.add('status-ea');
+        status.textContent = 'Status: EA approved (Director pending)';
+      } else if (req.status === 'directorApproved') {
+        status.classList.add('status-dir');
+        status.textContent = 'Status: Approved by Director';
+      } else if (req.status === 'rejected') {
+        status.classList.add('status-rej');
+        status.textContent = 'Status: Rejected';
+      }
+
+      const purpose = document.createElement('div');
+      purpose.textContent = 'Purpose: ' + req.purpose;
+
+      div.appendChild(top);
+      div.appendChild(dept);
+      div.appendChild(status);
+      div.appendChild(purpose);
+      box.appendChild(div);
+    });
+  }
+
+  // ---------- Admin table ----------
+  function renderAdminTable(dateKey) {
+    const body = document.getElementById('adminBody');
+    body.innerHTML = '';
+    if (currentRole === 'visitor') return;
+
+    const requests = getRequests(dateKey);
+    if (!requests.length) {
+      const tr = document.createElement('tr');
+      const td = document.createElement('td');
+      td.colSpan = 5;
+      td.textContent = 'No requests for this date.';
+      td.className = 'empty-text';
+      tr.appendChild(td);
+      body.appendChild(tr);
+      return;
+    }
+
+    requests.forEach(req => {
+      const tr = document.createElement('tr');
+
+      const tdTime = document.createElement('td');
+      tdTime.textContent = req.preferredTime || '-';
+
+      const tdPerson = document.createElement('td');
+      tdPerson.innerHTML = '<strong>' + req.name + '</strong><br><span style="font-size:0.75rem;color:#6b7280;">' +
+        req.dept + '</span>';
+
+      const tdPurpose = document.createElement('td');
+      tdPurpose.textContent = req.purpose;
+
+      const tdStatus = document.createElement('td');
+      const st = document.createElement('span');
+      st.className = 'status-text';
+      if (req.status === 'pending') {
+        st.classList.add('status-pending');
+        st.textContent = 'Pending (EA review)';
+      } else if (req.status === 'eaApproved') {
+        st.classList.add('status-ea');
+        st.textContent = 'EA approved';
+      } else if (req.status === 'directorApproved') {
+        st.classList.add('status-dir');
+        st.textContent = 'Director approved';
+      } else if (req.status === 'rejected') {
+        st.classList.add('status-rej');
+        st.textContent = 'Rejected';
+      }
+      tdStatus.appendChild(st);
+
+      const tdActions = document.createElement('td');
+      const canEA = (currentRole === 'ea' && req.status === 'pending');
+      const canDir = (currentRole === 'director' && req.status === 'eaApproved');
+
+      if (canEA || canDir) {
+        const btnA = document.createElement('button');
+        btnA.type = 'button';
+        btnA.className = 'btn-tag btn-approve';
+        btnA.textContent = 'Approve';
+        btnA.onclick = () => handleApproval(dateKey, req.id, 'approve');
+
+        const btnR = document.createElement('button');
+        btnR.type = 'button';
+        btnR.className = 'btn-tag btn-reject';
+        btnR.textContent = 'Reject';
+        btnR.onclick = () => handleApproval(dateKey, req.id, 'reject');
+
+        tdActions.appendChild(btnA);
+        tdActions.appendChild(btnR);
+      } else {
+        tdActions.innerHTML = '<span style="font-size:0.75rem;color:#6b7280;">No action</span>';
+      }
+
+      tr.appendChild(tdTime);
+      tr.appendChild(tdPerson);
+      tr.appendChild(tdPurpose);
+      tr.appendChild(tdStatus);
+      tr.appendChild(tdActions);
+      body.appendChild(tr);
+    });
+  }
+
+  function handleApproval(dateKey, id, action) {
+    const list = getRequests(dateKey);
+    const idx = list.findIndex(r => r.id === id);
+    if (idx === -1) return;
+
+    if (action === 'approve') {
+      if (currentRole === 'ea') list[idx].status = 'eaApproved';
+      else if (currentRole === 'director') list[idx].status = 'directorApproved';
+    } else {
+      list[idx].status = 'rejected';
+    }
+
+    saveRequests(dateKey, list);
+    renderRequests(dateKey);
+    renderAdminTable(dateKey);
+  }
+
+  // ---------- Form logic ----------
+  function setupForm() {
+    const form = document.getElementById('checkinForm');
+    const success = document.getElementById('formSuccess');
+    const error = document.getElementById('formError');
+    const datePicker = document.getElementById('datePicker');
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      success.style.display = 'none';
+      error.style.display = 'none';
+
+      const name = document.getElementById('visitorName').value.trim();
+      const dept = document.getElementById('visitorDept').value.trim();
+      const time = document.getElementById('preferredTime').value;
+      const urgency = document.getElementById('urgency').value;
+      const purpose = document.getElementById('purpose').value.trim();
+
+      if (!name || !dept || !urgency || !purpose) {
+        error.style.display = 'block';
+        return;
+      }
+
+      const dateKey = datePicker.value;
+      const list = getRequests(dateKey);
+
+      list.push({
+        id: generateId(),
+        name,
+        dept,
+        preferredTime: time,
+        urgency,
+        purpose,
+        status: 'pending',
+        createdAt: new Date().toISOString()
+      });
+
+      saveRequests(dateKey, list);
+      renderRequests(dateKey);
+      renderAdminTable(dateKey);
+
+      success.style.display = 'block';
+      form.reset();
+    });
+  }
+
+  // ---------- Init ----------
+  document.addEventListener('DOMContentLoaded', () => {
+    const datePicker = document.getElementById('datePicker');
+    const today = new Date();
+    const todayKey = toKeyDate(today);
+
+    // Demo schedule for today – you can change this time table
+    scheduleData[todayKey] = [
+      { time: '10:00 – 10:30', who: 'ERP & IT Team', agenda: 'ERP review' },
+      { time: '10:30 – 11:00', who: 'Admissions Team', agenda: 'Admissions status' },
+      { time: '11:00 – 11:30', who: 'Finance Team', agenda: 'Budget discussion' },
+      { time: '12:00 – 12:30', who: 'HR Team', agenda: 'Faculty workload' }
+    ];
+
+    datePicker.value = todayKey;
+    renderSchedule(todayKey);
+    renderRequests(todayKey);
+    renderAdminTable(todayKey);
+    setupForm();
+    updateRoleUI();
+
+    datePicker.addEventListener('change', () => {
+      const key = datePicker.value;
+      renderSchedule(key);
+      renderRequests(key);
+      renderAdminTable(key);
+    });
+
+    document.getElementById('clearRequests').addEventListener('click', () => {
+      const key = datePicker.value;
+      if (confirm('Clear all requests for this date on this device?')) {
+        saveRequests(key, []);
+        renderRequests(key);
+        renderAdminTable(key);
+      }
+    });
+  });
+</script>
+</body>
+</html>
