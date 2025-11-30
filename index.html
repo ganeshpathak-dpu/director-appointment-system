@@ -12,9 +12,9 @@
     }
 
     :root{
-      --bg:#0b1120;
+      --bg:#020617;
       --card:#ffffff;
-      --accent:#b91c1c;   /* DYP Red */
+      --accent:#b91c1c;   /* DYP red */
       --border:#e5e7eb;
       --text-main:#0f172a;
       --text-muted:#6b7280;
@@ -28,32 +28,125 @@
       color:var(--text-main);
     }
 
-    .page{max-width:1150px;margin:0 auto;padding:16px;}
+    .page{
+      max-width:1150px;
+      margin:0 auto;
+      padding:18px 16px 24px;
+    }
 
     /******** HEADER ********/
     .header-card{
-      background:linear-gradient(135deg,rgba(185,28,28,0.96),rgba(15,23,42,0.92));
-      padding:14px 18px;
-      border-radius:12px;
+      background:linear-gradient(130deg,rgba(185,28,28,0.94),rgba(15,23,42,0.96));
+      padding:14px 18px 16px;
+      border-radius:22px;
       color:white;
+      box-shadow:0 20px 40px rgba(15,23,42,0.85);
       display:flex;
-      justify-content:space-between;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .header-top{
+      display:flex;
       align-items:center;
+      justify-content:space-between;
+      gap:16px;
       flex-wrap:wrap;
-      box-shadow:0 16px 32px rgba(15,23,42,0.7);
+    }
+
+    .header-logo-wrap{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .header-logo-box{
+      background:white;
+      border-radius:14px;
+      padding:6px 10px;
+      box-shadow:0 6px 14px rgba(15,23,42,0.4);
+    }
+
+    .header-logo-box img{
+      height:52px;
+      display:block;
+    }
+
+    .header-title-block{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+
+    .header-institute{
+      font-size:0.78rem;
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+      opacity:0.9;
+    }
+
+    .header-main-title{
+      margin:0;
+      font-size:1.4rem;
+      line-height:1.2;
+    }
+
+    .header-sub{
+      margin:0;
+      font-size:0.8rem;
+      opacity:0.9;
+    }
+
+    .header-director{
+      margin:0;
+      font-size:0.78rem;
+      opacity:0.9;
+    }
+
+    .header-bottom{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .date-chip{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      background:rgba(15,23,42,0.35);
+      padding:6px 12px;
+      border-radius:999px;
+      font-size:0.8rem;
+    }
+
+    .date-chip span{
+      font-weight:500;
+    }
+
+    .date-chip input[type="date"]{
+      border:none;
+      border-radius:999px;
+      padding:4px 8px;
+      font-size:0.8rem;
+      outline:none;
+      background:white;
+      color:#111827;
     }
 
     .role-area{
       display:flex;
       align-items:center;
-      gap:8px;
+      gap:10px;
       flex-wrap:wrap;
-      color:white;
+      font-size:0.8rem;
     }
 
     .role-switch{
       display:inline-flex;
-      background:rgba(255,255,255,0.15);
+      background:rgba(15,23,42,0.45);
       border-radius:999px;
       padding:3px;
     }
@@ -61,26 +154,38 @@
     .role-pill{
       border:none;
       background:transparent;
-      padding:5px 12px;
-      color:white;
+      padding:5px 14px;
+      color:#e5e7eb;
       font-size:0.75rem;
       border-radius:999px;
       opacity:0.7;
       cursor:pointer;
+      transition:all 0.15s;
     }
 
     .role-pill.active{
       background:white;
       color:#b91c1c;
       opacity:1;
+      box-shadow:0 4px 10px rgba(15,23,42,0.45);
+    }
+
+    .pin-group{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      background:rgba(15,23,42,0.35);
+      padding:5px 8px;
+      border-radius:999px;
     }
 
     .pin-input{
       border:none;
       border-radius:999px;
       padding:5px 10px;
-      min-width:120px;
-      font-size:0.75rem;
+      min-width:140px;
+      font-size:0.76rem;
+      outline:none;
     }
 
     .btn-small{
@@ -89,9 +194,15 @@
       padding:5px 12px;
       border-radius:999px;
       cursor:pointer;
-      font-size:0.75rem;
+      font-size:0.76rem;
       font-weight:600;
       color:#b91c1c;
+      box-shadow:0 4px 8px rgba(0,0,0,0.25);
+      transition:transform 0.08s, box-shadow 0.12s;
+    }
+    .btn-small:active{
+      transform:scale(0.97);
+      box-shadow:0 2px 4px rgba(0,0,0,0.4);
     }
 
     /******** LAYOUT ********/
@@ -102,16 +213,17 @@
       margin-top:18px;
     }
 
-    @media(max-width:850px){
+    @media(max-width:900px){
       .layout{grid-template-columns:1fr;}
+      .header-bottom{flex-direction:column;align-items:flex-start;}
     }
 
     .card{
       background:var(--card);
       border:1px solid var(--border);
-      border-radius:10px;
-      padding:14px;
-      box-shadow:0 8px 20px rgba(0,0,0,0.15);
+      border-radius:18px;
+      padding:14px 14px 16px;
+      box-shadow:0 10px 26px rgba(15,23,42,0.25);
     }
 
     .card-title{
@@ -126,6 +238,7 @@
       padding:3px 8px;
       border-radius:999px;
       font-size:0.7rem;
+      font-weight:600;
     }
 
     /******** FORM ********/
@@ -133,18 +246,26 @@
       font-size:0.8rem;
       color:#374151;
     }
-    .field{
-      margin-bottom:10px;
-    }
+    .field{margin-bottom:10px;}
+
     input,select,textarea{
       width:100%;
-      padding:8px;
-      border-radius:6px;
+      padding:8px 9px;
+      border-radius:10px;
       background:#f8fafc;
       border:1px solid #d1d5db;
       font-size:0.85rem;
+      outline:none;
+      transition:border 0.12s, box-shadow 0.12s, transform 0.08s;
     }
     textarea{min-height:70px;}
+
+    input:focus,select:focus,textarea:focus{
+      border-color:#b91c1c;
+      box-shadow:0 0 0 1px rgba(185,28,28,0.35);
+      transform:translateY(-1px);
+      background:white;
+    }
 
     .btn-main{
       background:#b91c1c;
@@ -155,17 +276,21 @@
       cursor:pointer;
       font-size:0.9rem;
       font-weight:600;
-      box-shadow:0 8px 20px rgba(185,28,28,0.3);
+      box-shadow:0 10px 24px rgba(185,28,28,0.45);
+      transition:transform 0.08s, box-shadow 0.12s;
+    }
+    .btn-main:active{
+      transform:translateY(1px);
+      box-shadow:0 6px 16px rgba(185,28,28,0.5);
     }
 
     .alert{
       margin-top:10px;
-      padding:10px;
-      border-radius:8px;
+      padding:9px 10px;
+      border-radius:10px;
       font-size:0.8rem;
       display:none;
     }
-
     .alert-success{
       background:#dcfce7;
       color:#166534;
@@ -181,25 +306,32 @@
       flex-wrap:wrap;
       gap:8px;
     }
-
     .slot-pill{
       padding:6px 12px;
-      border:1px solid #d1d5db;
       border-radius:999px;
+      border:1px solid #d1d5db;
       cursor:pointer;
       background:#f1f5f9;
       font-size:0.8rem;
+      transition:transform 0.08s, box-shadow 0.12s, background 0.12s;
+    }
+    .slot-pill:hover{
+      transform:translateY(-1px);
+      box-shadow:0 4px 10px rgba(15,23,42,0.18);
     }
     .slot-pill.selected{
       background:#b91c1c;
       border-color:#b91c1c;
       color:white;
+      box-shadow:0 5px 14px rgba(185,28,28,0.55);
     }
     .slot-pill.booked{
       background:#e5e7eb;
       color:#9ca3af;
       border-style:dashed;
       cursor:not-allowed;
+      box-shadow:none;
+      transform:none;
     }
     .slot-pill.pending{
       background:#fff7ed;
@@ -237,7 +369,6 @@
       font-size:0.75rem;
       color:white;
     }
-
     .st-pending{background:#f59e0b;}
     .st-approved{background:#16a34a;}
     .st-rejected{background:#b91c1c;}
@@ -261,46 +392,46 @@
 </head>
 
 <body>
-
 <div class="page">
 
   <!-- HEADER -->
   <div class="header-card">
 
-    <!-- LEFT: BRANDING -->
-    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-      <img src="https://dypbs.edu.in/assets/img/B-school-logo-ver-5.png"
-           alt="DPU Logo"
-           style="height:55px;background:white;border-radius:6px;padding:4px;" />
-
-      <div>
-        <div style="font-size:0.75rem;text-transform:uppercase;opacity:0.9;">
-          Dr. D. Y. Patil B-School (DPGU)
+    <div class="header-top">
+      <div class="header-logo-wrap">
+        <div class="header-logo-box">
+          <img src="https://dypbs.edu.in/assets/img/B-school-logo-ver-5.png" alt="DPU Logo" />
         </div>
-        <h1 style="margin:0;font-size:1.35rem;">Director's Appointment Portal</h1>
-        <p style="margin:2px 0 0;font-size:0.8rem;opacity:0.9;">
-          Office of the Director · Pune
-        </p>
+
+        <div class="header-title-block">
+          <div class="header-institute">DR. D. Y. PATIL B-SCHOOL (DPGU)</div>
+          <h1 class="header-main-title">Director's Appointment Portal</h1>
+          <p class="header-sub">Office of the Director · Pune</p>
+          <p class="header-director">Director: <strong>Dr. Raja Roy Choudhury</strong></p>
+        </div>
       </div>
     </div>
 
-    <!-- RIGHT: ROLES -->
-    <div class="role-area">
-
-      <div style="background:rgba(255,255,255,0.15);padding:5px 10px;border-radius:999px;">
-        Date: <input type="date" id="datePicker" style="border-radius:6px;border:none;padding:4px;" />
+    <div class="header-bottom">
+      <div class="date-chip">
+        <span>Date:</span>
+        <input type="date" id="datePicker" />
       </div>
 
-      <div class="role-switch">
-        <button class="role-pill active" data-role="visitor">Visitor</button>
-        <button class="role-pill" data-role="ea">EA</button>
-        <button class="role-pill" data-role="director">Director</button>
+      <div class="role-area">
+        <div class="role-switch">
+          <button class="role-pill active" data-role="visitor">Visitor</button>
+          <button class="role-pill" data-role="ea">EA</button>
+          <button class="role-pill" data-role="director">Director</button>
+        </div>
+
+        <div class="pin-group">
+          <input type="password" id="pinInput" class="pin-input" placeholder="PIN for EA/Director" />
+          <button class="btn-small" id="pinApplyBtn">Apply</button>
+        </div>
       </div>
-
-      <input type="password" id="pinInput" class="pin-input" placeholder="PIN" />
-      <button class="btn-small" id="pinApplyBtn">Apply</button>
-
     </div>
+
   </div>
 
   <!-- LAYOUT -->
@@ -308,35 +439,28 @@
 
     <!-- LEFT PANEL -->
     <section class="card">
-
       <div class="card-title">
         <h2>Office Panel</h2>
         <span class="tag" id="roleTag">Visitor mode</span>
       </div>
-
       <p style="font-size:0.75rem;color:var(--text-muted);">
         EA can approve/reject requests & block time. Director sees upcoming approved appointments only.
       </p>
 
-      <!-- DIRECTOR PANEL -->
+      <!-- Director view -->
       <div id="directorPanel" style="display:none;">
         <h3 style="margin:8px 0;font-size:0.9rem;">Upcoming Approved Visitors</h3>
         <table>
           <thead>
-            <tr>
-              <th>When</th>
-              <th>Visitor</th>
-              <th>Purpose</th>
-            </tr>
+            <tr><th>When</th><th>Visitor</th><th>Purpose</th></tr>
           </thead>
           <tbody id="directorBody"></tbody>
         </table>
       </div>
 
-      <!-- EA PANEL -->
+      <!-- EA view -->
       <div id="eaPanel" style="display:none;">
-        <h3 style="font-size:0.9rem;margin:8px 0;">All Visits & Blocked Slots</h3>
-
+        <h3 style="margin:8px 0;font-size:0.9rem;">All Visits & Blocked Slots</h3>
         <table>
           <thead>
             <tr>
@@ -351,7 +475,7 @@
           <tbody id="eaBody"></tbody>
         </table>
 
-        <h3 style="margin-top:16px;font-size:0.9rem;">Block a Slot</h3>
+        <h3 style="margin-top:14px;font-size:0.9rem;">Block a Slot</h3>
         <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;">
           <div>
             <label>Date</label>
@@ -359,26 +483,23 @@
           </div>
           <div>
             <label>Time</label>
-            <select id="blockTime">
-              <option value="">Select</option>
-            </select>
+            <select id="blockTime"><option value="">Select</option></select>
           </div>
           <div style="flex:1;">
             <label>Reason</label>
-            <input type="text" id="blockReason" placeholder="Personal/Travel/etc." />
+            <input type="text" id="blockReason" placeholder="Personal / Travel / Meeting" />
           </div>
           <button class="btn-small" id="blockBtn">Block</button>
         </div>
         <div id="blockMsg" class="alert alert-success">Slot blocked successfully.</div>
       </div>
 
-      <!-- VISITOR INFO -->
+      <!-- Visitor info -->
       <div id="visitorInfo">
         <p style="font-size:0.75rem;color:var(--text-muted);margin-top:6px;">
-          Please use the form to request an appointment with the Director.
+          Please use the form on the right to request an appointment with the Director.
         </p>
       </div>
-
     </section>
 
     <!-- RIGHT: VISITOR FORM -->
@@ -393,22 +514,18 @@
           <label>Name *</label>
           <input id="visitorName" required />
         </div>
-
         <div class="field">
           <label>WhatsApp Number *</label>
           <input id="visitorPhone" placeholder="+91XXXXXXXXXX" required />
         </div>
-
         <div class="field">
           <label>Email *</label>
           <input id="visitorEmail" required />
         </div>
-
         <div class="field">
           <label>Department / Organisation *</label>
           <input id="visitorDept" required />
         </div>
-
         <div class="field">
           <label>Urgency *</label>
           <select id="urgency" required>
@@ -416,13 +533,11 @@
             <option value="urgent">Urgent</option>
           </select>
         </div>
-
         <div class="field">
           <label>Available Slots *</label>
           <div class="slots-wrap" id="slotContainer"></div>
           <input type="hidden" id="selectedSlot" />
         </div>
-
         <div class="field">
           <label>Purpose *</label>
           <textarea id="purpose" required></textarea>
@@ -434,7 +549,7 @@
           Request submitted. You’ll get confirmation on email & WhatsApp.
         </div>
         <div class="alert alert-error" id="formErr">
-          Error. Please check fields & try again.
+          Error submitting. Please check fields & try again.
         </div>
       </form>
     </section>
@@ -442,11 +557,8 @@
   </div>
 </div>
 
-
-<!-- BEGIN FULL JS LOGIC -->
 <script>
-
-  const API_URL = "YOUR_WEB_APP_URL_HERE";  
+  const API_URL = "YOUR_WEB_APP_URL_HERE";  // <-- put your Apps Script URL
   const ROLE_PINS = { ea: "1111", director: "2222" };
   const SLOT_LIST = ["10:00","10:30","11:00","11:30","12:00","12:30","13:00"];
 
@@ -465,7 +577,7 @@
   }
 
   async function loadAll(){
-    const res = await callApi({action:"listAll"});
+    const res=await callApi({action:"listAll"});
     allItems = res.success ? res.data : [];
     renderSlots();
     renderEAList();
@@ -489,11 +601,11 @@
   function renderSlots(){
     const cont=document.getElementById("slotContainer");
     const selected=document.getElementById("selectedSlot");
+    if(!cont) return;
     cont.innerHTML="";
     selected.value="";
 
     const todayItems=getItemsForDate(currentDateKey);
-
     const map={};
     todayItems.forEach(it=>{
       if(!map[it.time]) map[it.time]=[];
@@ -513,7 +625,7 @@
 
       if(blocked || approved){
         btn.classList.add("booked");
-      } else if(pending) {
+      } else if(pending){
         btn.classList.add("pending");
       } else {
         btn.onclick=()=>{
@@ -575,6 +687,7 @@
     const form=document.getElementById("visitForm");
     const ok=document.getElementById("formOk");
     const err=document.getElementById("formErr");
+    if(!form) return;
 
     form.addEventListener("submit", async ev=>{
       ev.preventDefault();
@@ -681,7 +794,7 @@
   }
 
   function sendWhatsApp(phone,name,date,time){
-    const clean=phone.replace(/\D/g,'');
+    const clean=(phone||"").replace(/\D/g,'');
     const msg=`Dear ${name}, your appointment with the Director is confirmed on ${date} at ${time}.`;
     const url=`https://wa.me/${clean}?text=${encodeURIComponent(msg)}`;
     window.open(url,"_blank");
@@ -742,14 +855,17 @@
     setupBlockControls();
     await loadAll();
 
-    document.getElementById("datePicker").onchange=e=>{
-      currentDateKey=e.target.value;
-      renderSlots();
-    };
-  });
+    const dp=document.getElementById("datePicker");
+    if(dp){
+      dp.onchange=e=>{
+        currentDateKey=e.target.value;
+        renderSlots();
+      };
+    }
 
+    setRole("visitor");
+  });
 </script>
-<!-- END JS -->
 
 </body>
 </html>
