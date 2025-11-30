@@ -18,9 +18,6 @@
       --border: #e5e7eb;
       --text-main: #0f172a;
       --text-muted: #6b7280;
-      --danger: #dc2626;
-      --success: #16a34a;
-      --pending: #f59e0b;
     }
     body {
       margin: 0;
@@ -204,9 +201,7 @@
     }
 
     /* =============== VISITOR FORM =============== */
-    .field {
-      margin-bottom: 8px;
-    }
+    .field { margin-bottom: 8px; }
     label {
       font-size: 0.75rem;
       font-weight: 500;
@@ -215,7 +210,7 @@
       margin-bottom: 3px;
     }
     input[type="text"],
-    input[type="email"],
+    input[type="tel"],
     select,
     textarea {
       width: 100%;
@@ -320,7 +315,7 @@
       cursor: not-allowed;
     }
 
-    /* =============== STATUS CHIPS =============== */
+    /* =============== STATUS / URGENCY =============== */
     .status-chip {
       display: inline-block;
       padding: 2px 7px;
@@ -328,10 +323,10 @@
       font-size: 0.7rem;
       color: #fff;
     }
-    .st-pending { background: var(--pending); }
-    .st-ea { background: #2563eb; }
-    .st-dir { background: var(--success); }
-    .st-rej { background: #b91c1c; }
+    .st-pending { background: #f59e0b; }
+    .st-ea      { background: #2563eb; }
+    .st-dir     { background: #16a34a; }
+    .st-rej     { background: #b91c1c; }
 
     .badge-urg {
       font-size: 0.7rem;
@@ -347,7 +342,6 @@
       color: #b91c1c;
     }
 
-    /* =============== ADMIN =============== */
     .admin-only {
       font-size: 0.7rem;
       color: var(--text-muted);
@@ -367,9 +361,7 @@
       border: 1px solid #e5e7eb;
       font-size: 0.7rem;
     }
-    .dash-label {
-      color: #6b7280;
-    }
+    .dash-label { color: #6b7280; }
     .dash-value {
       font-size: 0.95rem;
       font-weight: 700;
@@ -377,9 +369,7 @@
     }
 
     @media (max-width: 800px) {
-      .main-grid {
-        grid-template-columns: 1fr;
-      }
+      .main-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -449,7 +439,8 @@
           <span class="pill-soft" id="roleLabel">EA / Director</span>
         </div>
         <p class="admin-only">
-          EA: Approve/reject incoming requests. Director: Approve EA-approved requests (triggers confirmation email).
+          EA: Approve/reject incoming requests. Director: Approve EA-approved requests.
+          Use WhatsApp button to send confirmation message.
         </p>
 
         <!-- Director dashboard -->
@@ -465,7 +456,7 @@
             <th>Purpose</th>
             <th style="width:12%;">Urgency</th>
             <th style="width:15%;">Status</th>
-            <th style="width:17%;">Actions</th>
+            <th style="width:22%;">Actions</th>
           </tr>
           </thead>
           <tbody id="adminBody"></tbody>
@@ -481,7 +472,7 @@
       </div>
       <p class="subtext">
         Choose a free slot, fill your details, and submit. Your request goes first to the Executive Assistant,
-        then to the Director. You’ll receive an email once approved.
+        then to the Director. You’ll receive your confirmation via WhatsApp from the Director’s office.
       </p>
 
       <form id="visitorForm" autocomplete="off">
@@ -490,8 +481,8 @@
           <input type="text" id="visitorName" required />
         </div>
         <div class="field">
-          <label for="visitorEmail">Official Email (for confirmation) *</label>
-          <input type="email" id="visitorEmail" required />
+          <label for="visitorPhone">WhatsApp Number (with country code) *</label>
+          <input type="tel" id="visitorPhone" placeholder="+91XXXXXXXXXX" required />
         </div>
         <div class="field">
           <label for="visitorDept">Department / Organisation *</label>
@@ -501,7 +492,7 @@
         <div class="field">
           <label>Available Time Slots *</label>
           <p class="subtext" style="margin-top:0;margin-bottom:4px;">
-            Blue = selected | Grey = already booked | Orange = under review (another request).
+            Blue = selected · Grey = confirmed · Orange = under review (another request).
           </p>
           <div id="slotContainer" class="slots-wrap"></div>
           <input type="hidden" id="selectedSlot" />
@@ -525,7 +516,7 @@
         </button>
 
         <div id="formSuccess" class="alert alert-success">
-          Request submitted! You’ll receive an email after Director approval.
+          Request submitted! The Director’s office will confirm your slot on WhatsApp after approval.
         </div>
         <div id="formError" class="alert alert-error">
           There was a problem submitting your request. Please check fields and try again.
@@ -537,17 +528,15 @@
 
 <script>
   /************ CONFIG ************/
-  const API_URL = "https://script.google.com/macros/s/AKfycbxkCq9gkIFL7zkO15WOlHv6Ce69KGlzRuwoRqnGRLOH8mK6FwFL6gutkSAaFjyiNXa7/exec"; // <-- REPLACE with your Apps Script Web App URL
+  const API_URL = "https://script.google.com/macros/s/AKfycbxkCq9gkIFL7zkO15WOlHv6Ce69KGlzRuwoRqnGRLOH8mK6FwFL6gutkSAaFjyiNXa7/exec";  // <-- replace with your Web App URL
   const ROLE_PINS = { ea: "1111", director: "2222" };
 
-  // 30-min slots - adjust as needed
   const SLOT_LIST = ["10:00","10:30","11:00","11:30","12:00","12:30","13:00"];
 
-  // state
   let currentRole = "visitor";
   let currentDateKey = "";
   let allRequests = [];
-  const scheduleData = {}; // we keep static demo inside init
+  const scheduleData = {};
 
   /************ UTIL ************/
   function toKeyDate(date) {
@@ -612,8 +601,7 @@
   /************ ROLES ************/
   function setRole(newRole) {
     currentRole = newRole;
-    const pills = document.querySelectorAll(".role-pill");
-    pills.forEach(p => {
+    document.querySelectorAll(".role-pill").forEach(p => {
       p.classList.toggle("active", p.dataset.role === newRole);
     });
 
@@ -646,10 +634,8 @@
           setRole("visitor");
           return;
         }
-        // EA or Director need PIN
         const pin = document.getElementById("rolePin").value.trim();
-        const expected = ROLE_PINS[role];
-        if (pin === expected) {
+        if (pin === ROLE_PINS[role]) {
           setRole(role);
         } else {
           alert("Incorrect PIN for " + role.toUpperCase());
@@ -691,7 +677,6 @@
     hidden.value = "";
 
     const dayReqs = requestsForDate(currentDateKey);
-
     const statusByTime = {};
     dayReqs.forEach(r => {
       const t = r.time;
@@ -718,7 +703,6 @@
         pill.title = "Another request pending for this slot";
       } else {
         pill.addEventListener("click", () => {
-          if (pill.classList.contains("booked") || pill.classList.contains("pending")) return;
           hidden.value = slot;
           Array.from(container.children).forEach(c => c.classList.remove("selected"));
           pill.classList.add("selected");
@@ -740,13 +724,13 @@
       error.style.display = "none";
 
       const name = document.getElementById("visitorName").value.trim();
-      const email = document.getElementById("visitorEmail").value.trim();
+      const phone = document.getElementById("visitorPhone").value.trim();
       const dept = document.getElementById("visitorDept").value.trim();
       const urgency = document.getElementById("urgency").value;
       const purpose = document.getElementById("purpose").value.trim();
       const time = document.getElementById("selectedSlot").value;
 
-      if (!name || !email || !dept || !urgency || !purpose || !time) {
+      if (!name || !phone || !dept || !urgency || !purpose || !time) {
         error.style.display = "block";
         return;
       }
@@ -760,7 +744,7 @@
           dept,
           urgency,
           purpose,
-          email
+          phone
         });
 
         if (res && res.success) {
@@ -815,10 +799,11 @@
       tdTime.textContent = r.time || "-";
 
       const tdVisitor = document.createElement("td");
+      const phone = r.phone || "";
       tdVisitor.innerHTML =
         `<strong>${r.name}</strong><br>` +
         `<span style="font-size:0.7rem;color:#6b7280;">${r.dept}</span><br>` +
-        `<span style="font-size:0.7rem;color:#9ca3af;">${r.email || ""}</span>`;
+        `<span style="font-size:0.7rem;color:#9ca3af;">${phone}</span>`;
 
       const tdPurpose = document.createElement("td");
       tdPurpose.textContent = r.purpose;
@@ -874,6 +859,29 @@
 
         tdActions.appendChild(btnA);
         tdActions.appendChild(btnR);
+
+        // WhatsApp button – only if phone present
+        if (phone) {
+          const waBtn = document.createElement("button");
+          waBtn.type = "button";
+          waBtn.className = "btn-small";
+          waBtn.style.marginLeft = "4px";
+          waBtn.style.background = "#25D366";
+          waBtn.style.color = "#fff";
+          waBtn.textContent = "WhatsApp";
+
+          waBtn.onclick = () => {
+            const msg =
+              `Dear ${r.name}, your appointment with the Director is confirmed on ` +
+              `${r.date} at ${r.time}. Venue: Director's Office, DPU B-School.`;
+            const encodedMsg = encodeURIComponent(msg);
+            const cleanPhone = phone.replace(/\D/g, ""); // keep digits only
+            const url = `https://wa.me/${cleanPhone}?text=${encodedMsg}`;
+            window.open(url, "_blank");
+          };
+
+          tdActions.appendChild(waBtn);
+        }
       } else {
         tdActions.innerHTML =
           '<span style="font-size:0.7rem;color:#9ca3af;">No action</span>';
@@ -925,7 +933,7 @@
     currentDateKey = toKeyDate(today);
     datePicker.value = currentDateKey;
 
-    // demo schedule for today (edit as you like)
+    // demo schedule for today – you can edit this
     scheduleData[currentDateKey] = [
       { time: "10:00 – 10:30", who: "ERP & IT Team", agenda: "ERP review" },
       { time: "11:00 – 11:30", who: "Admissions Team", agenda: "Admissions pipeline" },
