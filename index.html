@@ -16,7 +16,7 @@
       color: #111827;
     }
     .container {
-      max-width: 900px;
+      max-width: 1000px;
       margin: 0 auto;
       padding: 16px;
     }
@@ -48,31 +48,23 @@
       gap: 6px;
       font-size: 0.85rem;
     }
-    input[type="date"],
-    input[type="password"],
-    select {
-      padding: 4px 8px;
+    input[type="date"], input[type="time"], input[type="text"], input[type="email"], select, textarea {
+      width: 100%;
+      padding: 6px 8px;
       border-radius: 4px;
       border: 1px solid #d1d5db;
       font-size: 0.85rem;
     }
-    .btn-small {
-      border: none;
-      cursor: pointer;
-      border-radius: 4px;
-      padding: 4px 10px;
+    textarea {
+      min-height: 70px;
+      resize: vertical;
+    }
+    label {
       font-size: 0.8rem;
       font-weight: 500;
-      background: #2563eb;
-      color: #fff;
-    }
-    .btn-small:active {
-      transform: scale(0.98);
-    }
-    .current-role {
-      font-size: 0.8rem;
-      color: #2563eb;
-      font-weight: 500;
+      color: #374151;
+      margin-bottom: 3px;
+      display: block;
     }
     .card {
       background: #ffffff;
@@ -90,21 +82,10 @@
       font-size: 0.8rem;
       color: #6b7280;
     }
-    .schedule-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.8rem;
-      color: #374151;
-      margin-bottom: 4px;
-    }
-    .schedule-date {
-      font-weight: 500;
-    }
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
     }
     th, td {
       padding: 6px;
@@ -122,150 +103,124 @@
       color: #6b7280;
       padding: 6px 0;
     }
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 4px;
-    }
-    label {
-      font-size: 0.8rem;
-      font-weight: 500;
-      color: #374151;
-    }
-    input[type="text"],
-    input[type="time"],
-    textarea {
-      width: 100%;
-      padding: 6px 8px;
-      border-radius: 4px;
-      border: 1px solid #d1d5db;
-      font-size: 0.85rem;
-      resize: vertical;
-    }
-    textarea {
-      min-height: 60px;
-      max-height: 120px;
-    }
-    .row-two {
-      display: flex;
-      gap: 8px;
-    }
-    .row-two > div {
-      flex: 1;
-    }
     .btn-main {
       border: none;
       cursor: pointer;
       border-radius: 4px;
-      padding: 8px 12px;
-      font-size: 0.9rem;
-      font-weight: 500;
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
       background: #2563eb;
       color: #fff;
-      align-self: flex-start;
-      margin-top: 4px;
     }
     .btn-main:active {
       transform: scale(0.98);
     }
+    .btn-tag {
+      border: none;
+      border-radius: 3px;
+      padding: 3px 8px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      margin-right: 4px;
+    }
+    .btn-approve {
+      background: #16a34a;
+      color: #fff;
+    }
+    .btn-reject {
+      background: #dc2626;
+      color: #fff;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      color: #fff;
+    }
+    .status-pending { background: #f59e0b; }
+    .status-ea { background: #2563eb; }
+    .status-dir { background: #16a34a; }
+    .status-rej { background: #b91c1c; }
+    .slot-pill {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      margin: 2px;
+      border: 1px solid #d1d5db;
+      cursor: pointer;
+    }
+    .slot-pill.selected {
+      background: #2563eb;
+      color: #fff;
+      border-color: #2563eb;
+    }
+    .slot-pill.booked {
+      background: #e5e7eb;
+      color: #9ca3af;
+      border-style: dashed;
+      cursor: not-allowed;
+    }
+    .role-label {
+      font-size: 0.75rem;
+      color: #4b5563;
+    }
+    .role-strong {
+      font-weight: 600;
+      color: #111827;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
     .alert {
-      margin-top: 6px;
       padding: 6px 8px;
       border-radius: 4px;
       font-size: 0.8rem;
-      display: none;
-    }
-    .alert-success {
-      background: #ecfdf5;
-      border: 1px solid #bbf7d0;
-      color: #166534;
-    }
-    .alert-error {
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      color: #7f1d1d;
-    }
-    .requests-box-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.8rem;
-      margin-top: 10px;
-      margin-bottom: 4px;
-    }
-    .link-small {
-      font-size: 0.75rem;
-      color: #2563eb;
-      cursor: pointer;
-      text-decoration: underline;
-    }
-    .requests-list {
-      border: 1px solid #e5e7eb;
-      border-radius: 4px;
-      padding: 6px;
-      max-height: 180px;
-      overflow-y: auto;
-      background: #f9fafb;
-      font-size: 0.8rem;
-    }
-    .request-item {
-      padding: 4px 0;
-      border-bottom: 1px solid #e5e7eb;
-    }
-    .request-item:last-child {
-      border-bottom: none;
-    }
-    .request-name {
-      font-weight: 600;
-    }
-    .request-line {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .status-text {
-      font-size: 0.75rem;
-    }
-    .status-pending {
-      color: #92400e;
-    }
-    .status-ea {
-      color: #1d4ed8;
-    }
-    .status-dir {
-      color: #15803d;
-    }
-    .status-rej {
-      color: #b91c1c;
-    }
-    .admin-note {
-      font-size: 0.75rem;
-      color: #6b7280;
       margin-top: 6px;
     }
-    .btn-tag {
-      border: none;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      cursor: pointer;
-    }
-    .btn-approve {
+    .alert-success {
       background: #dcfce7;
       color: #166534;
+      border: 1px solid #bbf7d0;
     }
-    .btn-reject {
+    .alert-error {
       background: #fee2e2;
       color: #b91c1c;
+      border: 1px solid #fecaca;
     }
-    @media (max-width: 600px) {
+    .dashboard-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .dash-box {
+      flex: 1 1 120px;
+      background: #f9fafb;
+      border-radius: 6px;
+      padding: 6px;
+      font-size: 0.75rem;
+      border: 1px solid #e5e7eb;
+    }
+    .dash-label {
+      color: #6b7280;
+      margin-bottom: 2px;
+    }
+    .dash-value {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    @media (max-width: 700px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
       .top-bar {
         flex-direction: column;
         align-items: flex-start;
-      }
-      .row-two {
-        flex-direction: column;
       }
     }
   </style>
@@ -275,38 +230,36 @@
   <header>
     <h1>Director Appointment System</h1>
     <p>Office of the Director – Dr. D. Y. Patil B-School (DPGU)</p>
-
     <div class="top-bar">
       <div class="top-bar-group">
         <span>Date:</span>
         <input type="date" id="datePicker">
       </div>
-
       <div class="top-bar-group">
-        <span>Login as:</span>
+        <span class="role-label">
+          Login as:
+          <span class="role-strong" id="roleLabel">Visitor</span>
+        </span>
         <select id="roleSelect">
           <option value="visitor">Visitor</option>
           <option value="ea">Executive Assistant</option>
           <option value="director">Director</option>
         </select>
-        <input type="password" id="rolePin" placeholder="PIN" style="width:80px;">
-        <button class="btn-small" id="setRoleBtn">Login</button>
-        <span class="current-role" id="currentRoleLabel">(Visitor view)</span>
+        <input type="password" id="rolePin" placeholder="PIN (EA=1111, Dir=2222)" style="width:160px;">
+        <button class="btn-main" id="roleBtn" type="button">Set</button>
       </div>
     </div>
   </header>
 
-  <!-- Schedule -->
+  <!-- Director Schedule -->
   <section class="card">
-    <div class="schedule-header">
-      <h2>Director’s Schedule</h2>
-      <span class="schedule-date" id="scheduleDateLabel"></span>
-    </div>
-    <p class="subtext">This is a read-only view of the Director’s plan for the selected date.</p>
-    <div id="scheduleEmpty" class="empty-text" style="display:none;">
-      No schedule added for this date yet.
-    </div>
-    <table id="scheduleTable">
+    <h2>Director’s Schedule</h2>
+    <p class="subtext">
+      Read-only view of the Director’s planned meetings for the selected date.
+      Appointment requests are booked only in the available slots shown below.
+    </p>
+    <div id="scheduleEmpty" class="empty-text">No schedule added for this date yet.</div>
+    <table>
       <thead>
       <tr>
         <th style="width:20%;">Time</th>
@@ -314,112 +267,116 @@
         <th>Agenda</th>
       </tr>
       </thead>
-      <tbody id="scheduleBody">
-      <!-- Filled by JS -->
-      </tbody>
+      <tbody id="scheduleBody"></tbody>
     </table>
   </section>
 
-  <!-- Visitor Form -->
-  <section class="card">
+  <!-- Visitor Appointment Form -->
+  <section class="card" id="visitorSection">
     <h2>Appointment Request (Visitor)</h2>
     <p class="subtext">
-      Please fill this form to request an appointment. First the Executive Assistant will review, then the Director will approve.
+      Please request a meeting only in free slots. You will receive a confirmation email once the Director approves.
     </p>
 
-    <form id="checkinForm">
-      <div class="row-two">
+    <form id="visitorForm">
+      <div class="grid-2">
         <div>
           <label for="visitorName">Your full name *</label>
           <input type="text" id="visitorName" required>
         </div>
         <div>
+          <label for="visitorEmail">Your email (for confirmation) *</label>
+          <input type="email" id="visitorEmail" required>
+        </div>
+        <div>
           <label for="visitorDept">Department / Organisation *</label>
           <input type="text" id="visitorDept" required>
-        </div>
-      </div>
-
-      <div class="row-two">
-        <div>
-          <label for="preferredTime">Preferred time (optional)</label>
-          <input type="time" id="preferredTime">
         </div>
         <div>
           <label for="urgency">Urgency *</label>
           <select id="urgency" required>
-            <option value="">Select…</option>
             <option value="normal">Normal</option>
             <option value="urgent">Urgent</option>
           </select>
         </div>
       </div>
 
-      <div>
+      <div style="margin-top:8px;">
+        <label>Available time slots for selected date *</label>
+        <div id="slotContainer"></div>
+        <input type="hidden" id="selectedSlot">
+      </div>
+
+      <div style="margin-top:8px;">
         <label for="purpose">Purpose of meeting *</label>
         <textarea id="purpose" required></textarea>
       </div>
 
-      <button type="submit" class="btn-main">Submit Request</button>
+      <button class="btn-main" type="submit" style="margin-top:8px;">Submit Request</button>
 
-      <div id="formSuccess" class="alert alert-success">
-        Request submitted. You will be informed by the Director’s office.
+      <div id="formSuccess" class="alert alert-success" style="display:none;">
+        Your request has been submitted. You will receive an email after approval.
       </div>
-      <div id="formError" class="alert alert-error">
-        Please fill all required fields, or try again later.
+      <div id="formError" class="alert alert-error" style="display:none;">
+        There was a problem submitting your request. Please check fields and try again.
       </div>
     </form>
-
-    <div class="requests-box-header">
-      <span>Requests for this date (all statuses):</span>
-      <span id="clearRequests" class="link-small">Reload from server</span>
-    </div>
-    <div id="requestsList" class="requests-list">
-      <!-- Filled by JS -->
-    </div>
   </section>
 
-  <!-- Admin Panel -->
+  <!-- EA / Director section -->
   <section class="card" id="adminSection" style="display:none;">
     <h2>Approval Panel (EA / Director)</h2>
     <p class="subtext">
-      Level 1: Executive Assistant approves or rejects.<br>
-      Level 2: Director approves or rejects EA-approved requests.
+      Level 1: Executive Assistant approves/rejects incoming requests.  
+      Level 2: Director approves/rejects EA-approved requests. Director approvals trigger confirmation emails.
     </p>
 
-    <table id="adminTable">
+    <!-- Director dashboard -->
+    <div id="directorDashboard" style="display:none;">
+      <h3 style="margin:0 0 4px; font-size:0.9rem;">Director Dashboard – Today</h3>
+      <div class="dashboard-row" id="dashRow">
+        <!-- Filled via JS -->
+      </div>
+    </div>
+
+    <table style="margin-top:8px;">
       <thead>
       <tr>
-        <th style="width:15%;">Time</th>
-        <th style="width:25%;">Visitor</th>
+        <th style="width:13%;">Time</th>
+        <th style="width:22%;">Visitor</th>
         <th>Purpose</th>
-        <th style="width:20%;">Status</th>
-        <th style="width:20%;">Actions</th>
+        <th style="width:15%;">Urgency</th>
+        <th style="width:16%;">Status</th>
+        <th style="width:18%;">Actions</th>
       </tr>
       </thead>
-      <tbody id="adminBody">
-      <!-- Filled by JS -->
-      </tbody>
+      <tbody id="adminBody"></tbody>
     </table>
-
-    <p class="admin-note">
-      Demo PINs (change later in code): EA = 1111, Director = 2222.<br>
-      Data is stored centrally in a Google Sheet via Apps Script.
-    </p>
   </section>
 </div>
 
 <script>
-  // ====== CONFIG ======
-  const API_URL = "https://script.google.com/macros/s/AKfycbxkCq9gkIFL7zkO15WOlHv6Ce69KGlzRuwoRqnGRLOH8mK6FwFL6gutkSAaFjyiNXa7/exec"; // <-- use YOUR latest web app URL if this changed
-
-  // Role handling
-  let currentRole = "visitor"; // "visitor" | "ea" | "director"
+  // ========= CONFIG =========
+  const API_URL = "YOUR_WEB_APP_URL_HERE"; // <-- put your Apps Script Web App URL here
   const ROLE_PINS = { ea: "1111", director: "2222" };
 
-  // In-memory requests for currently selected date
-  let currentRequests = [];
+  // Time slots (30 min from 10:00–13:00 as example; adjust as you like)
+  const SLOT_LIST = [
+    "10:00",
+    "10:30",
+    "11:00",
+    "11:30",
+    "12:00",
+    "12:30",
+    "13:00"
+  ];
 
-  // ===== Utility =====
+  let currentRole = "visitor";
+  let allRequests = [];          // all rows from server
+  let currentDateKey = "";       // YYYY-MM-DD
+  let selectedSlot = "";
+
+  // ========= UTIL =========
   function toKeyDate(date) {
     const d = new Date(date);
     if (isNaN(d.getTime())) return "";
@@ -439,26 +396,15 @@
     return res.json();
   }
 
-  // ===== Schedule (still manual/local) =====
+  // ========= SCHEDULE (STATIC DEMO DATA; you can edit or later move to Sheet) =========
   const scheduleData = {};
 
-  function renderSchedule(dateKey) {
+  function renderSchedule() {
     const body = document.getElementById("scheduleBody");
     const empty = document.getElementById("scheduleEmpty");
-    const label = document.getElementById("scheduleDateLabel");
     body.innerHTML = "";
 
-    if (dateKey) {
-      const d = new Date(dateKey);
-      if (!isNaN(d.getTime())) {
-        const options = { weekday: "short", year: "numeric", month: "short", day: "numeric" };
-        label.textContent = d.toLocaleDateString(undefined, options);
-      } else {
-        label.textContent = "";
-      }
-    }
-
-    const list = scheduleData[dateKey] || [];
+    const list = scheduleData[currentDateKey] || [];
     if (!list.length) {
       empty.style.display = "block";
       return;
@@ -470,11 +416,9 @@
       const tdTime = document.createElement("td");
       const tdWho = document.createElement("td");
       const tdAgenda = document.createElement("td");
-
       tdTime.textContent = item.time;
       tdWho.textContent = item.who;
       tdAgenda.textContent = item.agenda;
-
       tr.appendChild(tdTime);
       tr.appendChild(tdWho);
       tr.appendChild(tdAgenda);
@@ -482,242 +426,123 @@
     });
   }
 
-  // ===== Role UI =====
+  // ========= ROLES =========
   function updateRoleUI() {
-    const label = document.getElementById("currentRoleLabel");
+    const label = document.getElementById("roleLabel");
     const adminSection = document.getElementById("adminSection");
+    const visitorSection = document.getElementById("visitorSection");
+    const directorDashboard = document.getElementById("directorDashboard");
 
     if (currentRole === "visitor") {
-      label.textContent = "(Visitor view)";
+      label.textContent = "Visitor";
+      visitorSection.style.display = "block";
       adminSection.style.display = "none";
+      directorDashboard.style.display = "none";
     } else if (currentRole === "ea") {
-      label.textContent = "(EA view – Level 1 approval)";
+      label.textContent = "Executive Assistant";
+      visitorSection.style.display = "block";
       adminSection.style.display = "block";
-    } else {
-      label.textContent = "(Director view – Final approval)";
+      directorDashboard.style.display = "none";
+    } else if (currentRole === "director") {
+      label.textContent = "Director";
+      visitorSection.style.display = "block";
       adminSection.style.display = "block";
+      directorDashboard.style.display = "block";
     }
-
-    renderRequests();
     renderAdminTable();
+    renderSlots();
+    if (currentRole === "director") {
+      renderDashboard();
+    }
   }
 
-  document.getElementById("setRoleBtn").addEventListener("click", () => {
-    const sel = document.getElementById("roleSelect").value;
-    const pin = document.getElementById("rolePin").value.trim();
+  function setupRoleControls() {
+    const btn = document.getElementById("roleBtn");
+    btn.addEventListener("click", () => {
+      const sel = document.getElementById("roleSelect").value;
+      const pin = document.getElementById("rolePin").value.trim();
 
-    if (sel === "visitor") {
-      currentRole = "visitor";
-      document.getElementById("rolePin").value = "";
-      updateRoleUI();
-      return;
-    }
-
-    const expected = ROLE_PINS[sel];
-    if (pin === expected) {
-      currentRole = sel;
-      document.getElementById("rolePin").value = "";
-      updateRoleUI();
-    } else {
-      alert("Incorrect PIN.");
-    }
-  });
-
-  // ===== Load requests from backend and filter by date =====
- async function loadRequestsFromServer(dateKey) {
-  try {
-    const res = await apiPost({ action: "get" });
-    console.log("GET data from server:", res);
-
-    let rows = [];
-    if (res && res.success && Array.isArray(res.data)) {
-      rows = res.data;
-    } else if (Array.isArray(res)) {
-      rows = res;
-    } else {
-      rows = [];
-    }
-
-    // TEMP: ignore date, show all rows
-    currentRequests = rows;
-  } catch (err) {
-    console.error("Error loading requests", err);
-    currentRequests = [];
-  }
-  renderRequests();
-  renderAdminTable();
-}
-
-
-
-  // ===== Visitor list =====
-  function renderRequests() {
-    const box = document.getElementById("requestsList");
-    box.innerHTML = "";
-
-    if (!currentRequests.length) {
-      box.textContent = "No requests for this date yet.";
-      return;
-    }
-
-    currentRequests.forEach(req => {
-      const div = document.createElement("div");
-      div.className = "request-item";
-
-      const top = document.createElement("div");
-      top.className = "request-line";
-      const name = document.createElement("span");
-      name.className = "request-name";
-      name.textContent = req.name;
-
-      const time = document.createElement("span");
-      time.textContent = req.time || "-";
-
-      top.appendChild(name);
-      top.appendChild(time);
-
-      const dept = document.createElement("div");
-      dept.textContent = req.dept;
-
-      const status = document.createElement("div");
-      status.className = "status-text";
-      if (req.status === "pending") {
-        status.classList.add("status-pending");
-        status.textContent = "Status: Pending (EA review)";
-      } else if (req.status === "eaApproved") {
-        status.classList.add("status-ea");
-        status.textContent = "Status: EA approved (Director pending)";
-      } else if (req.status === "directorApproved") {
-        status.classList.add("status-dir");
-        status.textContent = "Status: Approved by Director";
-      } else if (req.status === "rejected") {
-        status.classList.add("status-rej");
-        status.textContent = "Status: Rejected";
+      if (sel === "visitor") {
+        currentRole = "visitor";
+        document.getElementById("rolePin").value = "";
+        updateRoleUI();
+        return;
       }
 
-      const purpose = document.createElement("div");
-      purpose.textContent = "Purpose: " + req.purpose;
-
-      div.appendChild(top);
-      div.appendChild(dept);
-      div.appendChild(status);
-      div.appendChild(purpose);
-      box.appendChild(div);
-    });
-  }
-
-  // ===== Admin table =====
-  function renderAdminTable() {
-    const body = document.getElementById("adminBody");
-    body.innerHTML = "";
-    if (currentRole === "visitor") return;
-
-    if (!currentRequests.length) {
-      const tr = document.createElement("tr");
-      const td = document.createElement("td");
-      td.colSpan = 5;
-      td.textContent = "No requests for this date.";
-      td.className = "empty-text";
-      tr.appendChild(td);
-      body.appendChild(tr);
-      return;
-    }
-
-    currentRequests.forEach(req => {
-      const tr = document.createElement("tr");
-
-      const tdTime = document.createElement("td");
-      tdTime.textContent = req.time || "-";
-
-      const tdPerson = document.createElement("td");
-      tdPerson.innerHTML =
-        "<strong>" +
-        req.name +
-        "</strong><br><span style='font-size:0.75rem;color:#6b7280;'>" +
-        req.dept +
-        "</span>";
-
-      const tdPurpose = document.createElement("td");
-      tdPurpose.textContent = req.purpose;
-
-      const tdStatus = document.createElement("td");
-      const st = document.createElement("span");
-      st.className = "status-text";
-      if (req.status === "pending") {
-        st.classList.add("status-pending");
-        st.textContent = "Pending (EA review)";
-      } else if (req.status === "eaApproved") {
-        st.classList.add("status-ea");
-        st.textContent = "EA approved";
-      } else if (req.status === "directorApproved") {
-        st.classList.add("status-dir");
-        st.textContent = "Director approved";
-      } else if (req.status === "rejected") {
-        st.classList.add("status-rej");
-        st.textContent = "Rejected";
-      }
-      tdStatus.appendChild(st);
-
-      const tdActions = document.createElement("td");
-      const canEA = currentRole === "ea" && req.status === "pending";
-      const canDir = currentRole === "director" && req.status === "eaApproved";
-
-      if (canEA || canDir) {
-        const btnA = document.createElement("button");
-        btnA.type = "button";
-        btnA.className = "btn-tag btn-approve";
-        btnA.textContent = "Approve";
-        btnA.onclick = () => handleApproval(req.id, "approve");
-
-        const btnR = document.createElement("button");
-        btnR.type = "button";
-        btnR.className = "btn-tag btn-reject";
-        btnR.textContent = "Reject";
-        btnR.onclick = () => handleApproval(req.id, "reject");
-
-        tdActions.appendChild(btnA);
-        tdActions.appendChild(btnR);
+      const expected = ROLE_PINS[sel];
+      if (pin === expected) {
+        currentRole = sel;
+        document.getElementById("rolePin").value = "";
+        updateRoleUI();
       } else {
-        tdActions.innerHTML =
-          "<span style='font-size:0.75rem;color:#6b7280;'>No action</span>";
+        alert("Incorrect PIN.");
       }
-
-      tr.appendChild(tdTime);
-      tr.appendChild(tdPerson);
-      tr.appendChild(tdPurpose);
-      tr.appendChild(tdStatus);
-      tr.appendChild(tdActions);
-      body.appendChild(tr);
     });
   }
 
-  async function handleApproval(id, action) {
-    const datePicker = document.getElementById("datePicker");
-    const dateKey = datePicker.value;
-    let newStatus;
-
-    if (action === "approve") {
-      if (currentRole === "ea") newStatus = "eaApproved";
-      else if (currentRole === "director") newStatus = "directorApproved";
-    } else {
-      newStatus = "rejected";
-    }
-
+  // ========= LOAD DATA =========
+  async function loadAllRequests() {
     try {
-      await apiPost({ action: "update", id, status: newStatus });
-      await loadRequestsFromServer(dateKey);
+      const res = await apiPost({ action: "get" });
+      if (res && res.success && Array.isArray(res.data)) {
+        allRequests = res.data;
+      } else {
+        allRequests = [];
+      }
     } catch (err) {
-      console.error("Error updating status", err);
-      alert("Error updating status. Please try again.");
+      console.error("Error loading requests", err);
+      allRequests = [];
+    }
+    renderSlots();
+    renderAdminTable();
+    if (currentRole === "director") {
+      renderDashboard();
     }
   }
 
-  // ===== Form logic =====
-  function setupForm() {
-    const form = document.getElementById("checkinForm");
+  function requestsForCurrentDate() {
+    return allRequests.filter(r => r.date === currentDateKey);
+  }
+
+  // ========= VISITOR SLOTS =========
+  function renderSlots() {
+    const container = document.getElementById("slotContainer");
+    container.innerHTML = "";
+    selectedSlot = "";
+    document.getElementById("selectedSlot").value = "";
+
+    const dayRequests = requestsForCurrentDate();
+    const bookedTimes = new Set(
+      dayRequests
+        .filter(r => r.status === "directorApproved")
+        .map(r => r.time)
+    );
+
+    SLOT_LIST.forEach(slot => {
+      const pill = document.createElement("span");
+      pill.className = "slot-pill";
+      pill.textContent = slot;
+
+      if (bookedTimes.has(slot)) {
+        pill.classList.add("booked");
+      } else {
+        pill.addEventListener("click", () => {
+          if (pill.classList.contains("booked")) return;
+          selectedSlot = slot;
+          document.getElementById("selectedSlot").value = slot;
+          Array.from(container.children).forEach(ch => ch.classList.remove("selected"));
+          pill.classList.add("selected");
+        });
+      }
+      container.appendChild(pill);
+    });
+  }
+
+  // ========= VISITOR FORM =========
+  function setupVisitorForm() {
+    const form = document.getElementById("visitorForm");
     const success = document.getElementById("formSuccess");
     const error = document.getElementById("formError");
-    const datePicker = document.getElementById("datePicker");
 
     form.addEventListener("submit", async e => {
       e.preventDefault();
@@ -725,68 +550,209 @@
       error.style.display = "none";
 
       const name = document.getElementById("visitorName").value.trim();
+      const email = document.getElementById("visitorEmail").value.trim();
       const dept = document.getElementById("visitorDept").value.trim();
-      const time = document.getElementById("preferredTime").value;
       const urgency = document.getElementById("urgency").value;
       const purpose = document.getElementById("purpose").value.trim();
+      const time = document.getElementById("selectedSlot").value;
 
-      if (!name || !dept || !urgency || !purpose) {
+      if (!name || !email || !dept || !urgency || !purpose || !time) {
         error.style.display = "block";
         return;
       }
 
-      const dateKey = datePicker.value;
-
       try {
-        await apiPost({
+        const res = await apiPost({
           action: "add",
-          date: dateKey,
+          date: currentDateKey,
           time,
           name,
           dept,
           urgency,
-          purpose
+          purpose,
+          email
         });
-        await loadRequestsFromServer(dateKey);
-        success.style.display = "block";
-        form.reset();
+
+        if (res && res.success) {
+          success.style.display = "block";
+          form.reset();
+          await loadAllRequests(); // refresh slots, admin view
+        } else {
+          console.error("Add error", res);
+          error.style.display = "block";
+        }
       } catch (err) {
-        console.error("Error submitting request", err);
+        console.error("Error submitting", err);
         error.style.display = "block";
       }
     });
   }
 
-  // ===== Init =====
+  // ========= ADMIN TABLE =========
+  function renderAdminTable() {
+    const body = document.getElementById("adminBody");
+    body.innerHTML = "";
+    if (currentRole === "visitor") return;
+
+    const list = requestsForCurrentDate();
+    if (!list.length) {
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.colSpan = 6;
+      td.textContent = "No requests for this date.";
+      td.className = "empty-text";
+      tr.appendChild(td);
+      body.appendChild(tr);
+      return;
+    }
+
+    list.forEach(req => {
+      const tr = document.createElement("tr");
+
+      const tdTime = document.createElement("td");
+      tdTime.textContent = req.time || "-";
+
+      const tdVisitor = document.createElement("td");
+      tdVisitor.innerHTML =
+        "<strong>" + req.name + "</strong><br>" +
+        "<span style='font-size:0.7rem;color:#6b7280;'>" + req.dept + "</span><br>" +
+        "<span style='font-size:0.7rem;color:#9ca3af;'>" + (req.email || "") + "</span>";
+
+      const tdPurpose = document.createElement("td");
+      tdPurpose.textContent = req.purpose;
+
+      const tdUrg = document.createElement("td");
+      tdUrg.textContent = req.urgency;
+
+      const tdStatus = document.createElement("td");
+      const st = document.createElement("span");
+      st.className = "status-badge ";
+      if (req.status === "pending") {
+        st.classList.add("status-pending");
+        st.textContent = "Pending (EA)";
+      } else if (req.status === "eaApproved") {
+        st.classList.add("status-ea");
+        st.textContent = "EA Approved";
+      } else if (req.status === "directorApproved") {
+        st.classList.add("status-dir");
+        st.textContent = "Director Approved";
+      } else if (req.status === "rejected") {
+        st.classList.add("status-rej");
+        st.textContent = "Rejected";
+      }
+      tdStatus.appendChild(st);
+
+      const tdActions = document.createElement("td");
+
+      const canEA = (currentRole === "ea") && (req.status === "pending");
+      const canDir = (currentRole === "director") && (req.status === "eaApproved");
+
+      if (canEA || canDir) {
+        const btnA = document.createElement("button");
+        btnA.type = "button";
+        btnA.className = "btn-tag btn-approve";
+        btnA.textContent = "Approve";
+        btnA.onclick = () => updateStatus(req.id, currentRole === "ea" ? "eaApproved" : "directorApproved");
+
+        const btnR = document.createElement("button");
+        btnR.type = "button";
+        btnR.className = "btn-tag btn-reject";
+        btnR.textContent = "Reject";
+        btnR.onclick = () => updateStatus(req.id, "rejected");
+
+        tdActions.appendChild(btnA);
+        tdActions.appendChild(btnR);
+      } else {
+        tdActions.innerHTML = "<span style='font-size:0.7rem;color:#9ca3af;'>No action</span>";
+      }
+
+      tr.appendChild(tdTime);
+      tr.appendChild(tdVisitor);
+      tr.appendChild(tdPurpose);
+      tr.appendChild(tdUrg);
+      tr.appendChild(tdStatus);
+      tr.appendChild(tdActions);
+      body.appendChild(tr);
+    });
+  }
+
+  async function updateStatus(id, newStatus) {
+    try {
+      await apiPost({ action: "update", id, status: newStatus });
+      await loadAllRequests();
+      alert("Status updated.");
+    } catch (err) {
+      console.error("Error updating status", err);
+      alert("Error updating status. Please try again.");
+    }
+  }
+
+  // ========= DIRECTOR DASHBOARD =========
+  function renderDashboard() {
+    const list = requestsForCurrentDate();
+    const dashRow = document.getElementById("dashRow");
+    dashRow.innerHTML = "";
+
+    let total = list.length;
+    let pending = list.filter(r => r.status === "pending").length;
+    let eaApproved = list.filter(r => r.status === "eaApproved").length;
+    let dirApproved = list.filter(r => r.status === "directorApproved").length;
+    let rejected = list.filter(r => r.status === "rejected").length;
+    let urgent = list.filter(r => r.urgency === "urgent").length;
+
+    function addBox(label, value) {
+      const box = document.createElement("div");
+      box.className = "dash-box";
+      const l = document.createElement("div");
+      l.className = "dash-label";
+      l.textContent = label;
+      const v = document.createElement("div");
+      v.className = "dash-value";
+      v.textContent = value;
+      box.appendChild(l);
+      box.appendChild(v);
+      dashRow.appendChild(box);
+    }
+
+    addBox("Total requests", total);
+    addBox("Pending (EA)", pending);
+    addBox("EA approved", eaApproved);
+    addBox("Director approved", dirApproved);
+    addBox("Rejected", rejected);
+    addBox("Urgent", urgent);
+  }
+
+  // ========= INIT =========
   document.addEventListener("DOMContentLoaded", async () => {
+    // init date
     const datePicker = document.getElementById("datePicker");
     const today = new Date();
-    const todayKey = toKeyDate(today);
+    currentDateKey = toKeyDate(today);
+    datePicker.value = currentDateKey;
 
-    // Demo schedule for today – adjust as needed
-    scheduleData[todayKey] = [
+    // demo schedule for today – you can edit
+    scheduleData[currentDateKey] = [
       { time: "10:00 – 10:30", who: "ERP & IT Team", agenda: "ERP review" },
-      { time: "10:30 – 11:00", who: "Admissions Team", agenda: "Admissions status" },
-      { time: "11:00 – 11:30", who: "Finance Team", agenda: "Budget discussion" },
-      { time: "12:00 – 12:30", who: "HR Team", agenda: "Faculty workload" }
+      { time: "11:00 – 11:30", who: "Admissions Team", agenda: "Admissions status" },
+      { time: "12:00 – 12:30", who: "Finance Team", agenda: "Budget review" }
     ];
+    renderSchedule();
 
-    datePicker.value = todayKey;
-    renderSchedule(todayKey);
-    setupForm();
+    setupRoleControls();
+    setupVisitorForm();
     updateRoleUI();
-
-    await loadRequestsFromServer(todayKey);
+    await loadAllRequests();
 
     datePicker.addEventListener("change", async () => {
-      const key = datePicker.value;
-      renderSchedule(key);
-      await loadRequestsFromServer(key);
-    });
-
-    document.getElementById("clearRequests").addEventListener("click", async () => {
-      const key = datePicker.value;
-      await loadRequestsFromServer(key);
+      currentDateKey = datePicker.value;
+      renderSchedule();
+      renderSlots();
+      renderAdminTable();
+      if (currentRole === "director") {
+        renderDashboard();
+      }
     });
   });
 </script>
+</body>
+</html>
