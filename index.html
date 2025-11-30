@@ -364,36 +364,67 @@
       font-size:0.75rem;
     }
 
-    /* Office info */
-    .office-bio{
+    /******** Director + EA profile ********/
+    .office-profile{
       margin-top:4px;
       margin-bottom:8px;
       display:flex;
       flex-direction:column;
-      gap:8px;
-      font-size:0.78rem;
-      color:#374151;
+      gap:10px;
     }
-    .office-section{
-      padding:6px 8px;
-      border-radius:10px;
+
+    .office-director-block{
+      padding:10px 8px 8px;
+      border-radius:12px;
       background:#f9fafb;
       border:1px solid #e5e7eb;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      text-align:center;
     }
+
+    .office-avatar{
+      width:78px;
+      height:78px;
+      border-radius:50%;
+      object-fit:cover;
+      border:2px solid #b91c1c;
+      box-shadow:0 6px 14px rgba(15,23,42,0.25);
+      margin-bottom:6px;
+    }
+
     .office-name-main{
       font-weight:700;
       font-size:0.9rem;
       color:#111827;
     }
+
+    .office-role{
+      font-size:0.78rem;
+      color:#4b5563;
+    }
+
+    .office-divider{
+      height:1px;
+      background:#e5e7eb;
+      margin:2px 0 4px;
+      width:100%;
+    }
+
+    .office-assistant-block{
+      padding:6px 8px;
+      border-radius:10px;
+      background:#f9fafb;
+      border:1px solid #e5e7eb;
+    }
+
     .office-name-secondary{
       font-weight:600;
       font-size:0.82rem;
       color:#374151;
     }
-    .office-role{
-      font-size:0.78rem;
-      color:#4b5563;
-    }
+
   </style>
 </head>
 
@@ -441,14 +472,24 @@
         <span class="tag" id="roleTag">Visitor mode</span>
       </div>
 
-      <div class="office-bio">
-        <div class="office-section">
+      <div class="office-profile">
+        <!-- Director with photo -->
+        <div class="office-director-block">
+          <img
+            src="https://github.com/ganeshpathak-dpu/director-appointment-system/blob/main/Sir.png"
+            alt="Dr. Raja Roy Choudhury"
+            class="office-avatar"
+          />
           <div class="office-name-main">Dr. Raja Roy Choudhury</div>
           <div class="office-role">Director, Dr. D. Y. Patil B-School (DPGU)</div>
           <div class="office-role">DPGU School of Business &amp; Strategy and School of Liberal Arts</div>
         </div>
 
-        <div class="office-section">
+        <!-- thin line between director and EA -->
+        <div class="office-divider"></div>
+
+        <!-- Assistant -->
+        <div class="office-assistant-block">
           <div class="office-name-secondary">Ganesh Pathak</div>
           <div class="office-role">Executive Assistant to Director, Director's Office</div>
           <div class="office-role">Contact: 8421559109 · ganesh.pathak@dpu.edu.in</div>
