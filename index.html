@@ -799,7 +799,10 @@ function renderAdminTable() {
       const tr = document.createElement("tr");
 
       const tdTime = document.createElement("td");
-      tdTime.textContent = r.time || "-";
+      tdTime.innerHTML =
+        (r.time || "-") +
+          `<br><span style="font-size:0.7rem;color:#9ca3af;">${r.date}</span>`;
+
 
       const tdVisitor = document.createElement("td");
       const phone = r.phone || "";
