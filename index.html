@@ -364,7 +364,7 @@
       font-size:0.75rem;
     }
 
-    /* Office panel bio */
+    /* Office info */
     .office-bio{
       margin-top:4px;
       margin-bottom:8px;
@@ -374,20 +374,25 @@
       font-size:0.78rem;
       color:#374151;
     }
-    .office-name{
-      font-weight:700;
-      font-size:0.85rem;
-      color:#111827;
-    }
-    .office-role{
-      font-size:0.78rem;
-      color:#4b5563;
-    }
     .office-section{
       padding:6px 8px;
       border-radius:10px;
       background:#f9fafb;
       border:1px solid #e5e7eb;
+    }
+    .office-name-main{
+      font-weight:700;
+      font-size:0.9rem;
+      color:#111827;
+    }
+    .office-name-secondary{
+      font-weight:600;
+      font-size:0.82rem;
+      color:#374151;
+    }
+    .office-role{
+      font-size:0.78rem;
+      color:#4b5563;
     }
   </style>
 </head>
@@ -397,7 +402,6 @@
 
   <!-- HEADER -->
   <div class="header-card">
-
     <div class="header-top">
       <div class="header-logo-wrap">
         <div class="header-logo-box">
@@ -425,7 +429,6 @@
         </div>
       </div>
     </div>
-
   </div>
 
   <!-- LAYOUT -->
@@ -434,27 +437,26 @@
     <!-- LEFT PANEL -->
     <section class="card">
       <div class="card-title">
-        <h2>Office Panel</h2>
+        <h2>Director's Office</h2>
         <span class="tag" id="roleTag">Visitor mode</span>
       </div>
 
       <div class="office-bio">
         <div class="office-section">
-          <div class="office-name">Dr. Raja Roy Choudhury</div>
+          <div class="office-name-main">Dr. Raja Roy Choudhury</div>
           <div class="office-role">Director, Dr. D. Y. Patil B-School (DPGU)</div>
-          <div class="office-role">DPGU School of Business &amp; Strategy.School </div>
-          <div class="office-role">DPGU School of Liberal Arts.</div>
+          <div class="office-role">DPGU School of Business &amp; Strategy and School of Liberal Arts</div>
         </div>
 
         <div class="office-section">
-          <div class="office-name">Ganesh Pathak</div>
+          <div class="office-name-secondary">Ganesh Pathak</div>
           <div class="office-role">Executive Assistant to Director, Director's Office</div>
           <div class="office-role">Contact: 8421559109 · ganesh.pathak@dpu.edu.in</div>
         </div>
       </div>
 
       <p style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">
-        Use the role switch above to view the portal as a Visitor, Executive Assistant (EA), or Director.
+        Use the role switch above to view as Visitor, Executive Assistant (EA), or Director.
       </p>
 
       <!-- Director view -->
@@ -564,7 +566,7 @@
           Request submitted. You’ll get confirmation on email & WhatsApp.
         </div>
         <div class="alert alert-error" id="formErr">
-          Error submitting. Please check fields & try again.
+          Error submitting. Please check fields &amp; try again.
         </div>
       </form>
     </section>
@@ -592,8 +594,17 @@
   }
 
   async function loadAll(){
-    const res=await callApi({action:"listAll"});
-    allItems = res.success ? res.data : [];
+    try{
+      const res=await callApi({action:"listAll"});
+      if(res && res.success && Array.isArray(res.data)){
+        allItems=res.data;
+      }else{
+        allItems=[];
+      }
+    }catch(e){
+      console.error("loadAll error",e);
+      allItems=[];
+    }
     renderSlots();
     renderEAList();
     renderDirectorList();
@@ -618,16 +629,13 @@
     const cont=document.getElementById("slotContainer");
     const selected=document.getElementById("selectedSlot");
     if(!cont || !selected) return;
+
     cont.innerHTML="";
     selected.value="";
 
-    if(!currentDateKey){
-      return;
-    }
-
-    const todayItems=getItemsForDate(currentDateKey);
+    const itemsForDay = currentDateKey ? getItemsForDate(currentDateKey) : [];
     const map={};
-    todayItems.forEach(it=>{
+    itemsForDay.forEach(it=>{
       if(!map[it.time]) map[it.time]=[];
       map[it.time].push(it);
     });
@@ -726,21 +734,30 @@
 
       currentDateKey=dateVal;
 
-      const res=await callApi({
-        action:"addVisit",
-        name,phone,email,dept,urgency:urg,purpose,
-        date:currentDateKey,
-        time
-      });
+      try{
+        const res=await callApi({
+          action:"addVisit",
+          name,phone,email,dept,urgency:urg,purpose,
+          date:currentDateKey,
+          time
+        });
 
-      if(res.success){
-        ok.style.display="block";
-        form.reset();
-        document.getElementById("selectedSlot").value="";
-        currentDateKey=dateVal; // keep same date
-        await loadAll();
-        document.getElementById("datePicker").value=dateVal;
-      } else err.style.display="block";
+        if(res.success){
+          ok.style.display="block";
+          form.reset();
+          document.getElementById("selectedSlot").value="";
+          await loadAll();
+          document.getElementById("datePicker").value=dateVal;
+          currentDateKey=dateVal;
+          renderSlots();
+        } else {
+          console.error("addVisit error",res);
+          err.style.display="block";
+        }
+      }catch(e){
+        console.error("submit error",e);
+        err.style.display="block";
+      }
     });
   }
 
@@ -808,11 +825,16 @@
   }
 
   async function updateStatus(id,status){
-    const res=await callApi({action:"updateStatus",id,status});
-    if(res.success){
-      await loadAll();
-      alert("Updated.");
-    } else alert("Failed: " + res.error);
+    try{
+      const res=await callApi({action:"updateStatus",id,status});
+      if(res.success){
+        await loadAll();
+        alert("Updated.");
+      } else alert("Failed: " + res.error);
+    }catch(e){
+      console.error("updateStatus error",e);
+      alert("Error updating status.");
+    }
   }
 
   function sendWhatsApp(phone,name,date,time){
@@ -862,10 +884,15 @@
 
       if(!date||!time){ alert("Select date & time."); return; }
 
-      const res=await callApi({action:"blockSlot",date,time,reason});
-      if(res.success){
-        document.getElementById("blockMsg").style.display="block";
-        await loadAll();
+      try{
+        const res=await callApi({action:"blockSlot",date,time,reason});
+        if(res.success){
+          document.getElementById("blockMsg").style.display="block";
+          await loadAll();
+        } else alert("Failed to block.");
+      }catch(e){
+        console.error("block error",e);
+        alert("Error blocking slot.");
       }
     };
   }
