@@ -410,72 +410,79 @@
 
 <script>
   // ====== CONFIG ======
-  const API_URL = "https://script.google.com/macros/s/AKfycbxLQP38_bhdwYNe4P-RuqSscPb-ggw9LAUar7fJ6azkDVU5yskIdUPQcgq3mF_7zc2h/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbxLQP38_bhdwYNe4P-RuqSscPb-ggw9LAUar7fJ6azkDVU5yskIdUPQcgq3mF_7zc2h/exec"; // <-- use YOUR latest web app URL if this changed
 
   // Role handling
-  let currentRole = "visitor";
+  let currentRole = "visitor"; // "visitor" | "ea" | "director"
   const ROLE_PINS = { ea: "1111", director: "2222" };
 
-  // In-memory cache for current date's requests
+  // In-memory requests for currently selected date
   let currentRequests = [];
 
-  // ====== Utility ======
+  // ===== Utility =====
   function toKeyDate(date) {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, "0");
-    const d = String(date.getDate()).padStart(2, "0");
-    return `${y}-${m}-${d}`;
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return "";
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
   }
 
   async function apiPost(paramsObj) {
     const body = new URLSearchParams(paramsObj);
     const res = await fetch(API_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body
     });
     return res.json();
   }
 
-  async function loadRequestsFromServer(dateKey) {
-    try {
-      const data = await apiPost({ action: "get", date: dateKey });
-      if (data && data.success) {
-        currentRequests = data.data || [];
+  // ===== Schedule (still manual/local) =====
+  const scheduleData = {};
+
+  function renderSchedule(dateKey) {
+    const body = document.getElementById("scheduleBody");
+    const empty = document.getElementById("scheduleEmpty");
+    const label = document.getElementById("scheduleDateLabel");
+    body.innerHTML = "";
+
+    if (dateKey) {
+      const d = new Date(dateKey);
+      if (!isNaN(d.getTime())) {
+        const options = { weekday: "short", year: "numeric", month: "short", day: "numeric" };
+        label.textContent = d.toLocaleDateString(undefined, options);
       } else {
-        currentRequests = [];
+        label.textContent = "";
       }
-    } catch (err) {
-      console.error("Error loading requests", err);
-      currentRequests = [];
     }
-    renderRequests();
-    renderAdminTable();
-  }
 
-  async function addRequestToServer(dateKey, payload) {
-    return apiPost({
-      action: "add",
-      date: dateKey,
-      time: payload.time || "",
-      name: payload.name,
-      dept: payload.dept,
-      urgency: payload.urgency,
-      purpose: payload.purpose
+    const list = scheduleData[dateKey] || [];
+    if (!list.length) {
+      empty.style.display = "block";
+      return;
+    }
+    empty.style.display = "none";
+
+    list.forEach(item => {
+      const tr = document.createElement("tr");
+      const tdTime = document.createElement("td");
+      const tdWho = document.createElement("td");
+      const tdAgenda = document.createElement("td");
+
+      tdTime.textContent = item.time;
+      tdWho.textContent = item.who;
+      tdAgenda.textContent = item.agenda;
+
+      tr.appendChild(tdTime);
+      tr.appendChild(tdWho);
+      tr.appendChild(tdAgenda);
+      body.appendChild(tr);
     });
   }
 
-  async function updateStatusOnServer(id, status) {
-    return apiPost({
-      action: "update",
-      id,
-      status
-    });
-  }
-
-  // ====== Role UI ======
+  // ===== Role UI =====
   function updateRoleUI() {
     const label = document.getElementById("currentRoleLabel");
     const adminSection = document.getElementById("adminSection");
@@ -516,48 +523,25 @@
     }
   });
 
-  // ====== Schedule Data (still local / manual) ======
-  const scheduleData = {};
-
-  function renderSchedule(dateKey) {
-    const body = document.getElementById("scheduleBody");
-    const empty = document.getElementById("scheduleEmpty");
-    const label = document.getElementById("scheduleDateLabel");
-    body.innerHTML = "";
-
-    const d = new Date(dateKey);
-    if (!isNaN(d.getTime())) {
-      const options = { weekday: "short", year: "numeric", month: "short", day: "numeric" };
-      label.textContent = d.toLocaleDateString(undefined, options);
-    } else {
-      label.textContent = "";
+  // ===== Load requests from backend and filter by date =====
+  async function loadRequestsFromServer(dateKey) {
+    try {
+      const data = await apiPost({ action: "get" });
+      if (data && data.success) {
+        const all = data.data || [];
+        currentRequests = all.filter(r => r.date === dateKey);
+      } else {
+        currentRequests = [];
+      }
+    } catch (err) {
+      console.error("Error loading requests", err);
+      currentRequests = [];
     }
-
-    const list = scheduleData[dateKey] || [];
-    if (!list.length) {
-      empty.style.display = "block";
-      return;
-    }
-    empty.style.display = "none";
-
-    list.forEach(item => {
-      const tr = document.createElement("tr");
-      const tdTime = document.createElement("td");
-      const tdWho = document.createElement("td");
-      const tdAgenda = document.createElement("td");
-
-      tdTime.textContent = item.time;
-      tdWho.textContent = item.who;
-      tdAgenda.textContent = item.agenda;
-
-      tr.appendChild(tdTime);
-      tr.appendChild(tdWho);
-      tr.appendChild(tdAgenda);
-      body.appendChild(tr);
-    });
+    renderRequests();
+    renderAdminTable();
   }
 
-  // ====== Visitor view: requests list (uses currentRequests) ======
+  // ===== Visitor list =====
   function renderRequests() {
     const box = document.getElementById("requestsList");
     box.innerHTML = "";
@@ -613,7 +597,7 @@
     });
   }
 
-  // ====== Admin table (uses currentRequests) ======
+  // ===== Admin table =====
   function renderAdminTable() {
     const body = document.getElementById("adminBody");
     body.innerHTML = "";
@@ -637,8 +621,12 @@
       tdTime.textContent = req.time || "-";
 
       const tdPerson = document.createElement("td");
-      tdPerson.innerHTML = "<strong>" + req.name + "</strong><br><span style='font-size:0.75rem;color:#6b7280;'>" +
-        req.dept + "</span>";
+      tdPerson.innerHTML =
+        "<strong>" +
+        req.name +
+        "</strong><br><span style='font-size:0.75rem;color:#6b7280;'>" +
+        req.dept +
+        "</span>";
 
       const tdPurpose = document.createElement("td");
       tdPurpose.textContent = req.purpose;
@@ -662,8 +650,8 @@
       tdStatus.appendChild(st);
 
       const tdActions = document.createElement("td");
-      const canEA = (currentRole === "ea" && req.status === "pending");
-      const canDir = (currentRole === "director" && req.status === "eaApproved");
+      const canEA = currentRole === "ea" && req.status === "pending";
+      const canDir = currentRole === "director" && req.status === "eaApproved";
 
       if (canEA || canDir) {
         const btnA = document.createElement("button");
@@ -681,7 +669,8 @@
         tdActions.appendChild(btnA);
         tdActions.appendChild(btnR);
       } else {
-        tdActions.innerHTML = "<span style='font-size:0.75rem;color:#6b7280;'>No action</span>";
+        tdActions.innerHTML =
+          "<span style='font-size:0.75rem;color:#6b7280;'>No action</span>";
       }
 
       tr.appendChild(tdTime);
@@ -697,14 +686,16 @@
     const datePicker = document.getElementById("datePicker");
     const dateKey = datePicker.value;
     let newStatus;
+
     if (action === "approve") {
       if (currentRole === "ea") newStatus = "eaApproved";
       else if (currentRole === "director") newStatus = "directorApproved";
     } else {
       newStatus = "rejected";
     }
+
     try {
-      await updateStatusOnServer(id, newStatus);
+      await apiPost({ action: "update", id, status: newStatus });
       await loadRequestsFromServer(dateKey);
     } catch (err) {
       console.error("Error updating status", err);
@@ -712,7 +703,7 @@
     }
   }
 
-  // ====== Form logic ======
+  // ===== Form logic =====
   function setupForm() {
     const form = document.getElementById("checkinForm");
     const success = document.getElementById("formSuccess");
@@ -738,10 +729,12 @@
       const dateKey = datePicker.value;
 
       try {
-        await addRequestToServer(dateKey, {
+        await apiPost({
+          action: "add",
+          date: dateKey,
+          time,
           name,
           dept,
-          time,
           urgency,
           purpose
         });
@@ -755,13 +748,13 @@
     });
   }
 
-  // ====== Init ======
+  // ===== Init =====
   document.addEventListener("DOMContentLoaded", async () => {
     const datePicker = document.getElementById("datePicker");
     const today = new Date();
     const todayKey = toKeyDate(today);
 
-    // Demo schedule for today – edit as per director's day
+    // Demo schedule for today – adjust as needed
     scheduleData[todayKey] = [
       { time: "10:00 – 10:30", who: "ERP & IT Team", agenda: "ERP review" },
       { time: "10:30 – 11:00", who: "Admissions Team", agenda: "Admissions status" },
@@ -788,5 +781,3 @@
     });
   });
 </script>
-</body>
-</html>
