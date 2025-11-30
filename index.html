@@ -905,7 +905,7 @@ function renderAdminTable() {
 
   /************ DIRECTOR DASHBOARD ************/
   function renderDashboard() {
-    const list = requestsForDate(currentDateKey);
+    const list = allRequests;
     const dashRow = document.getElementById("dashRow");
     dashRow.innerHTML = "";
 
