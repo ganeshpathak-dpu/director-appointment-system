@@ -451,7 +451,7 @@
         <table style="margin-top:6px;">
           <thead>
           <tr>
-            <th style="width:13%;">Time</th>
+            <th style="width:13%;">Time / Date</th>
             <th style="width:23%;">Visitor</th>
             <th>Purpose</th>
             <th style="width:12%;">Urgency</th>
@@ -763,7 +763,7 @@
     });
   }
 
-  /************ ADMIN TABLE ************/
+  /************ ADMIN TABLE (SHOWS ALL REQUESTS) ************/
   async function updateStatus(id, status) {
     try {
       await apiPost({ action: "update", id, status });
@@ -775,25 +775,24 @@
     }
   }
 
-function renderAdminTable() {
-  const body = document.getElementById("adminBody");
-  body.innerHTML = "";
-  if (currentRole === "visitor") return;
+  function renderAdminTable() {
+    const body = document.getElementById("adminBody");
+    body.innerHTML = "";
+    if (currentRole === "visitor") return;
 
-  const list = allRequests;   // <-- show ALL requests for EA/Director
-  if (!list.length) {
-    const tr = document.createElement("tr");
-    const td = document.createElement("td");
-    td.colSpan = 6;
-    td.className = "empty-row";
-    td.textContent = "No requests recorded yet.";
-    tr.appendChild(td);
-    body.appendChild(tr);
-    return;
-  }
-  ...
-}
+    // 🔴 IMPORTANT: EA / Director see ALL requests, not filtered by date
+    const list = allRequests;
 
+    if (!list.length) {
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.colSpan = 6;
+      td.className = "empty-row";
+      td.textContent = "No requests recorded yet.";
+      tr.appendChild(td);
+      body.appendChild(tr);
+      return;
+    }
 
     list.forEach(r => {
       const tr = document.createElement("tr");
@@ -801,8 +800,7 @@ function renderAdminTable() {
       const tdTime = document.createElement("td");
       tdTime.innerHTML =
         (r.time || "-") +
-          `<br><span style="font-size:0.7rem;color:#9ca3af;">${r.date}</span>`;
-
+        `<br><span style="font-size:0.7rem;color:#9ca3af;">${r.date}</span>`;
 
       const tdVisitor = document.createElement("td");
       const phone = r.phone || "";
@@ -903,9 +901,10 @@ function renderAdminTable() {
     });
   }
 
-  /************ DIRECTOR DASHBOARD ************/
+  /************ DIRECTOR DASHBOARD (ALL REQUESTS) ************/
   function renderDashboard() {
-    const list = allRequests;
+    const list = allRequests; // director sees stats on all
+
     const dashRow = document.getElementById("dashRow");
     dashRow.innerHTML = "";
 
@@ -939,7 +938,7 @@ function renderAdminTable() {
     currentDateKey = toKeyDate(today);
     datePicker.value = currentDateKey;
 
-    // demo schedule for today – you can edit this
+    // demo schedule for today – you can edit this or remove
     scheduleData[currentDateKey] = [
       { time: "10:00 – 10:30", who: "ERP & IT Team", agenda: "ERP review" },
       { time: "11:00 – 11:30", who: "Admissions Team", agenda: "Admissions pipeline" },
@@ -956,8 +955,7 @@ function renderAdminTable() {
       currentDateKey = datePicker.value;
       renderSchedule();
       renderSlots();
-      renderAdminTable();
-      if (currentRole === "director") renderDashboard();
+      // admin & dashboard now use allRequests, not date-specific
     });
   });
 </script>
