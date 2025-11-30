@@ -365,13 +365,13 @@
         Request submitted. You will be informed by the Director’s office.
       </div>
       <div id="formError" class="alert alert-error">
-        Please fill all required fields.
+        Please fill all required fields, or try again later.
       </div>
     </form>
 
     <div class="requests-box-header">
       <span>Requests for this date (all statuses):</span>
-      <span id="clearRequests" class="link-small">Clear local list</span>
+      <span id="clearRequests" class="link-small">Reload from server</span>
     </div>
     <div id="requestsList" class="requests-list">
       <!-- Filled by JS -->
@@ -403,43 +403,105 @@
 
     <p class="admin-note">
       Demo PINs (change later in code): EA = 1111, Director = 2222.<br>
-      Data is stored only in this browser (localStorage). For full campus use, this must later connect to a shared system.
+      Data is stored centrally in a Google Sheet via Apps Script.
     </p>
   </section>
 </div>
 
 <script>
-  // ---------- Role handling ----------
-  let currentRole = 'visitor'; // 'visitor' | 'ea' | 'director'
-  const ROLE_PINS = { ea: '1111', director: '2222' };
+  // ====== CONFIG ======
+  const API_URL = "https://script.google.com/a/macros/dpu.edu.in/s/AKfycbxfjXQOTIG_bagQe6xQ35bYt9KyfRgacwkptzBEcyPEoRUKtZAg7BhkZHn2ApSiXBY0/exec";
 
-  function updateRoleUI() {
-    const label = document.getElementById('currentRoleLabel');
-    const adminSection = document.getElementById('adminSection');
-    const dateKey = document.getElementById('datePicker').value;
+  // Role handling
+  let currentRole = "visitor";
+  const ROLE_PINS = { ea: "1111", director: "2222" };
 
-    if (currentRole === 'visitor') {
-      label.textContent = '(Visitor view)';
-      adminSection.style.display = 'none';
-    } else if (currentRole === 'ea') {
-      label.textContent = '(EA view – Level 1 approval)';
-      adminSection.style.display = 'block';
-    } else {
-      label.textContent = '(Director view – Final approval)';
-      adminSection.style.display = 'block';
-    }
+  // In-memory cache for current date's requests
+  let currentRequests = [];
 
-    renderRequests(dateKey);
-    renderAdminTable(dateKey);
+  // ====== Utility ======
+  function toKeyDate(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
   }
 
-  document.getElementById('setRoleBtn').addEventListener('click', () => {
-    const sel = document.getElementById('roleSelect').value;
-    const pin = document.getElementById('rolePin').value.trim();
+  async function apiPost(paramsObj) {
+    const body = new URLSearchParams(paramsObj);
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body
+    });
+    return res.json();
+  }
 
-    if (sel === 'visitor') {
-      currentRole = 'visitor';
-      document.getElementById('rolePin').value = '';
+  async function loadRequestsFromServer(dateKey) {
+    try {
+      const data = await apiPost({ action: "get", date: dateKey });
+      if (data && data.success) {
+        currentRequests = data.data || [];
+      } else {
+        currentRequests = [];
+      }
+    } catch (err) {
+      console.error("Error loading requests", err);
+      currentRequests = [];
+    }
+    renderRequests();
+    renderAdminTable();
+  }
+
+  async function addRequestToServer(dateKey, payload) {
+    return apiPost({
+      action: "add",
+      date: dateKey,
+      time: payload.time || "",
+      name: payload.name,
+      dept: payload.dept,
+      urgency: payload.urgency,
+      purpose: payload.purpose
+    });
+  }
+
+  async function updateStatusOnServer(id, status) {
+    return apiPost({
+      action: "update",
+      id,
+      status
+    });
+  }
+
+  // ====== Role UI ======
+  function updateRoleUI() {
+    const label = document.getElementById("currentRoleLabel");
+    const adminSection = document.getElementById("adminSection");
+
+    if (currentRole === "visitor") {
+      label.textContent = "(Visitor view)";
+      adminSection.style.display = "none";
+    } else if (currentRole === "ea") {
+      label.textContent = "(EA view – Level 1 approval)";
+      adminSection.style.display = "block";
+    } else {
+      label.textContent = "(Director view – Final approval)";
+      adminSection.style.display = "block";
+    }
+
+    renderRequests();
+    renderAdminTable();
+  }
+
+  document.getElementById("setRoleBtn").addEventListener("click", () => {
+    const sel = document.getElementById("roleSelect").value;
+    const pin = document.getElementById("rolePin").value.trim();
+
+    if (sel === "visitor") {
+      currentRole = "visitor";
+      document.getElementById("rolePin").value = "";
       updateRoleUI();
       return;
     }
@@ -447,49 +509,42 @@
     const expected = ROLE_PINS[sel];
     if (pin === expected) {
       currentRole = sel;
-      document.getElementById('rolePin').value = '';
+      document.getElementById("rolePin").value = "";
       updateRoleUI();
     } else {
-      alert('Incorrect PIN.');
+      alert("Incorrect PIN.");
     }
   });
 
-  // ---------- Schedule Data ----------
+  // ====== Schedule Data (still local / manual) ======
   const scheduleData = {};
 
-  function toKeyDate(date) {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
-  }
-
   function renderSchedule(dateKey) {
-    const body = document.getElementById('scheduleBody');
-    const empty = document.getElementById('scheduleEmpty');
-    const label = document.getElementById('scheduleDateLabel');
-    body.innerHTML = '';
+    const body = document.getElementById("scheduleBody");
+    const empty = document.getElementById("scheduleEmpty");
+    const label = document.getElementById("scheduleDateLabel");
+    body.innerHTML = "";
 
     const d = new Date(dateKey);
     if (!isNaN(d.getTime())) {
-      const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+      const options = { weekday: "short", year: "numeric", month: "short", day: "numeric" };
       label.textContent = d.toLocaleDateString(undefined, options);
     } else {
-      label.textContent = '';
+      label.textContent = "";
     }
 
     const list = scheduleData[dateKey] || [];
     if (!list.length) {
-      empty.style.display = 'block';
+      empty.style.display = "block";
       return;
     }
-    empty.style.display = 'none';
+    empty.style.display = "none";
 
     list.forEach(item => {
-      const tr = document.createElement('tr');
-      const tdTime = document.createElement('td');
-      const tdWho = document.createElement('td');
-      const tdAgenda = document.createElement('td');
+      const tr = document.createElement("tr");
+      const tdTime = document.createElement("td");
+      const tdWho = document.createElement("td");
+      const tdAgenda = document.createElement("td");
 
       tdTime.textContent = item.time;
       tdWho.textContent = item.who;
@@ -502,78 +557,53 @@
     });
   }
 
-  // ---------- Requests storage ----------
-  function storageKey(dateKey) {
-    return 'director_requests_' + dateKey;
-  }
-  function getRequests(dateKey) {
-    const raw = localStorage.getItem(storageKey(dateKey));
-    if (!raw) return [];
-    try {
-      const arr = JSON.parse(raw) || [];
-      return arr.map(r => {
-        if (!r.status) r.status = 'pending';
-        return r;
-      });
-    } catch {
-      return [];
-    }
-  }
-  function saveRequests(dateKey, requests) {
-    localStorage.setItem(storageKey(dateKey), JSON.stringify(requests));
-  }
-  function generateId() {
-    return 'REQ_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
-  }
+  // ====== Visitor view: requests list (uses currentRequests) ======
+  function renderRequests() {
+    const box = document.getElementById("requestsList");
+    box.innerHTML = "";
 
-  // ---------- Visitor view: requests list ----------
-  function renderRequests(dateKey) {
-    const box = document.getElementById('requestsList');
-    box.innerHTML = '';
-
-    const requests = getRequests(dateKey);
-    if (!requests.length) {
-      box.textContent = 'No requests for this date yet.';
+    if (!currentRequests.length) {
+      box.textContent = "No requests for this date yet.";
       return;
     }
 
-    requests.forEach(req => {
-      const div = document.createElement('div');
-      div.className = 'request-item';
+    currentRequests.forEach(req => {
+      const div = document.createElement("div");
+      div.className = "request-item";
 
-      const top = document.createElement('div');
-      top.className = 'request-line';
-      const name = document.createElement('span');
-      name.className = 'request-name';
+      const top = document.createElement("div");
+      top.className = "request-line";
+      const name = document.createElement("span");
+      name.className = "request-name";
       name.textContent = req.name;
 
-      const time = document.createElement('span');
-      time.textContent = req.preferredTime || '-';
+      const time = document.createElement("span");
+      time.textContent = req.time || "-";
 
       top.appendChild(name);
       top.appendChild(time);
 
-      const dept = document.createElement('div');
+      const dept = document.createElement("div");
       dept.textContent = req.dept;
 
-      const status = document.createElement('div');
-      status.className = 'status-text';
-      if (req.status === 'pending') {
-        status.classList.add('status-pending');
-        status.textContent = 'Status: Pending (EA review)';
-      } else if (req.status === 'eaApproved') {
-        status.classList.add('status-ea');
-        status.textContent = 'Status: EA approved (Director pending)';
-      } else if (req.status === 'directorApproved') {
-        status.classList.add('status-dir');
-        status.textContent = 'Status: Approved by Director';
-      } else if (req.status === 'rejected') {
-        status.classList.add('status-rej');
-        status.textContent = 'Status: Rejected';
+      const status = document.createElement("div");
+      status.className = "status-text";
+      if (req.status === "pending") {
+        status.classList.add("status-pending");
+        status.textContent = "Status: Pending (EA review)";
+      } else if (req.status === "eaApproved") {
+        status.classList.add("status-ea");
+        status.textContent = "Status: EA approved (Director pending)";
+      } else if (req.status === "directorApproved") {
+        status.classList.add("status-dir");
+        status.textContent = "Status: Approved by Director";
+      } else if (req.status === "rejected") {
+        status.classList.add("status-rej");
+        status.textContent = "Status: Rejected";
       }
 
-      const purpose = document.createElement('div');
-      purpose.textContent = 'Purpose: ' + req.purpose;
+      const purpose = document.createElement("div");
+      purpose.textContent = "Purpose: " + req.purpose;
 
       div.appendChild(top);
       div.appendChild(dept);
@@ -583,76 +613,75 @@
     });
   }
 
-  // ---------- Admin table ----------
-  function renderAdminTable(dateKey) {
-    const body = document.getElementById('adminBody');
-    body.innerHTML = '';
-    if (currentRole === 'visitor') return;
+  // ====== Admin table (uses currentRequests) ======
+  function renderAdminTable() {
+    const body = document.getElementById("adminBody");
+    body.innerHTML = "";
+    if (currentRole === "visitor") return;
 
-    const requests = getRequests(dateKey);
-    if (!requests.length) {
-      const tr = document.createElement('tr');
-      const td = document.createElement('td');
+    if (!currentRequests.length) {
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
       td.colSpan = 5;
-      td.textContent = 'No requests for this date.';
-      td.className = 'empty-text';
+      td.textContent = "No requests for this date.";
+      td.className = "empty-text";
       tr.appendChild(td);
       body.appendChild(tr);
       return;
     }
 
-    requests.forEach(req => {
-      const tr = document.createElement('tr');
+    currentRequests.forEach(req => {
+      const tr = document.createElement("tr");
 
-      const tdTime = document.createElement('td');
-      tdTime.textContent = req.preferredTime || '-';
+      const tdTime = document.createElement("td");
+      tdTime.textContent = req.time || "-";
 
-      const tdPerson = document.createElement('td');
-      tdPerson.innerHTML = '<strong>' + req.name + '</strong><br><span style="font-size:0.75rem;color:#6b7280;">' +
-        req.dept + '</span>';
+      const tdPerson = document.createElement("td");
+      tdPerson.innerHTML = "<strong>" + req.name + "</strong><br><span style='font-size:0.75rem;color:#6b7280;'>" +
+        req.dept + "</span>";
 
-      const tdPurpose = document.createElement('td');
+      const tdPurpose = document.createElement("td");
       tdPurpose.textContent = req.purpose;
 
-      const tdStatus = document.createElement('td');
-      const st = document.createElement('span');
-      st.className = 'status-text';
-      if (req.status === 'pending') {
-        st.classList.add('status-pending');
-        st.textContent = 'Pending (EA review)';
-      } else if (req.status === 'eaApproved') {
-        st.classList.add('status-ea');
-        st.textContent = 'EA approved';
-      } else if (req.status === 'directorApproved') {
-        st.classList.add('status-dir');
-        st.textContent = 'Director approved';
-      } else if (req.status === 'rejected') {
-        st.classList.add('status-rej');
-        st.textContent = 'Rejected';
+      const tdStatus = document.createElement("td");
+      const st = document.createElement("span");
+      st.className = "status-text";
+      if (req.status === "pending") {
+        st.classList.add("status-pending");
+        st.textContent = "Pending (EA review)";
+      } else if (req.status === "eaApproved") {
+        st.classList.add("status-ea");
+        st.textContent = "EA approved";
+      } else if (req.status === "directorApproved") {
+        st.classList.add("status-dir");
+        st.textContent = "Director approved";
+      } else if (req.status === "rejected") {
+        st.classList.add("status-rej");
+        st.textContent = "Rejected";
       }
       tdStatus.appendChild(st);
 
-      const tdActions = document.createElement('td');
-      const canEA = (currentRole === 'ea' && req.status === 'pending');
-      const canDir = (currentRole === 'director' && req.status === 'eaApproved');
+      const tdActions = document.createElement("td");
+      const canEA = (currentRole === "ea" && req.status === "pending");
+      const canDir = (currentRole === "director" && req.status === "eaApproved");
 
       if (canEA || canDir) {
-        const btnA = document.createElement('button');
-        btnA.type = 'button';
-        btnA.className = 'btn-tag btn-approve';
-        btnA.textContent = 'Approve';
-        btnA.onclick = () => handleApproval(dateKey, req.id, 'approve');
+        const btnA = document.createElement("button");
+        btnA.type = "button";
+        btnA.className = "btn-tag btn-approve";
+        btnA.textContent = "Approve";
+        btnA.onclick = () => handleApproval(req.id, "approve");
 
-        const btnR = document.createElement('button');
-        btnR.type = 'button';
-        btnR.className = 'btn-tag btn-reject';
-        btnR.textContent = 'Reject';
-        btnR.onclick = () => handleApproval(dateKey, req.id, 'reject');
+        const btnR = document.createElement("button");
+        btnR.type = "button";
+        btnR.className = "btn-tag btn-reject";
+        btnR.textContent = "Reject";
+        btnR.onclick = () => handleApproval(req.id, "reject");
 
         tdActions.appendChild(btnA);
         tdActions.appendChild(btnR);
       } else {
-        tdActions.innerHTML = '<span style="font-size:0.75rem;color:#6b7280;">No action</span>';
+        tdActions.innerHTML = "<span style='font-size:0.75rem;color:#6b7280;'>No action</span>";
       }
 
       tr.appendChild(tdTime);
@@ -664,104 +693,98 @@
     });
   }
 
-  function handleApproval(dateKey, id, action) {
-    const list = getRequests(dateKey);
-    const idx = list.findIndex(r => r.id === id);
-    if (idx === -1) return;
-
-    if (action === 'approve') {
-      if (currentRole === 'ea') list[idx].status = 'eaApproved';
-      else if (currentRole === 'director') list[idx].status = 'directorApproved';
+  async function handleApproval(id, action) {
+    const datePicker = document.getElementById("datePicker");
+    const dateKey = datePicker.value;
+    let newStatus;
+    if (action === "approve") {
+      if (currentRole === "ea") newStatus = "eaApproved";
+      else if (currentRole === "director") newStatus = "directorApproved";
     } else {
-      list[idx].status = 'rejected';
+      newStatus = "rejected";
     }
-
-    saveRequests(dateKey, list);
-    renderRequests(dateKey);
-    renderAdminTable(dateKey);
+    try {
+      await updateStatusOnServer(id, newStatus);
+      await loadRequestsFromServer(dateKey);
+    } catch (err) {
+      console.error("Error updating status", err);
+      alert("Error updating status. Please try again.");
+    }
   }
 
-  // ---------- Form logic ----------
+  // ====== Form logic ======
   function setupForm() {
-    const form = document.getElementById('checkinForm');
-    const success = document.getElementById('formSuccess');
-    const error = document.getElementById('formError');
-    const datePicker = document.getElementById('datePicker');
+    const form = document.getElementById("checkinForm");
+    const success = document.getElementById("formSuccess");
+    const error = document.getElementById("formError");
+    const datePicker = document.getElementById("datePicker");
 
-    form.addEventListener('submit', e => {
+    form.addEventListener("submit", async e => {
       e.preventDefault();
-      success.style.display = 'none';
-      error.style.display = 'none';
+      success.style.display = "none";
+      error.style.display = "none";
 
-      const name = document.getElementById('visitorName').value.trim();
-      const dept = document.getElementById('visitorDept').value.trim();
-      const time = document.getElementById('preferredTime').value;
-      const urgency = document.getElementById('urgency').value;
-      const purpose = document.getElementById('purpose').value.trim();
+      const name = document.getElementById("visitorName").value.trim();
+      const dept = document.getElementById("visitorDept").value.trim();
+      const time = document.getElementById("preferredTime").value;
+      const urgency = document.getElementById("urgency").value;
+      const purpose = document.getElementById("purpose").value.trim();
 
       if (!name || !dept || !urgency || !purpose) {
-        error.style.display = 'block';
+        error.style.display = "block";
         return;
       }
 
       const dateKey = datePicker.value;
-      const list = getRequests(dateKey);
 
-      list.push({
-        id: generateId(),
-        name,
-        dept,
-        preferredTime: time,
-        urgency,
-        purpose,
-        status: 'pending',
-        createdAt: new Date().toISOString()
-      });
-
-      saveRequests(dateKey, list);
-      renderRequests(dateKey);
-      renderAdminTable(dateKey);
-
-      success.style.display = 'block';
-      form.reset();
+      try {
+        await addRequestToServer(dateKey, {
+          name,
+          dept,
+          time,
+          urgency,
+          purpose
+        });
+        await loadRequestsFromServer(dateKey);
+        success.style.display = "block";
+        form.reset();
+      } catch (err) {
+        console.error("Error submitting request", err);
+        error.style.display = "block";
+      }
     });
   }
 
-  // ---------- Init ----------
-  document.addEventListener('DOMContentLoaded', () => {
-    const datePicker = document.getElementById('datePicker');
+  // ====== Init ======
+  document.addEventListener("DOMContentLoaded", async () => {
+    const datePicker = document.getElementById("datePicker");
     const today = new Date();
     const todayKey = toKeyDate(today);
 
-    // Demo schedule for today – you can change this time table
+    // Demo schedule for today – edit as per director's day
     scheduleData[todayKey] = [
-      { time: '10:00 – 10:30', who: 'ERP & IT Team', agenda: 'ERP review' },
-      { time: '10:30 – 11:00', who: 'Admissions Team', agenda: 'Admissions status' },
-      { time: '11:00 – 11:30', who: 'Finance Team', agenda: 'Budget discussion' },
-      { time: '12:00 – 12:30', who: 'HR Team', agenda: 'Faculty workload' }
+      { time: "10:00 – 10:30", who: "ERP & IT Team", agenda: "ERP review" },
+      { time: "10:30 – 11:00", who: "Admissions Team", agenda: "Admissions status" },
+      { time: "11:00 – 11:30", who: "Finance Team", agenda: "Budget discussion" },
+      { time: "12:00 – 12:30", who: "HR Team", agenda: "Faculty workload" }
     ];
 
     datePicker.value = todayKey;
     renderSchedule(todayKey);
-    renderRequests(todayKey);
-    renderAdminTable(todayKey);
     setupForm();
     updateRoleUI();
 
-    datePicker.addEventListener('change', () => {
+    await loadRequestsFromServer(todayKey);
+
+    datePicker.addEventListener("change", async () => {
       const key = datePicker.value;
       renderSchedule(key);
-      renderRequests(key);
-      renderAdminTable(key);
+      await loadRequestsFromServer(key);
     });
 
-    document.getElementById('clearRequests').addEventListener('click', () => {
+    document.getElementById("clearRequests").addEventListener("click", async () => {
       const key = datePicker.value;
-      if (confirm('Clear all requests for this date on this device?')) {
-        saveRequests(key, []);
-        renderRequests(key);
-        renderAdminTable(key);
-      }
+      await loadRequestsFromServer(key);
     });
   });
 </script>
