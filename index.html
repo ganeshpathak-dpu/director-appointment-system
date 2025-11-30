@@ -14,7 +14,7 @@
     :root{
       --bg:#020617;
       --card:#ffffff;
-      --accent:#b91c1c;   /* DYP red */
+      --accent:#b91c1c;
       --border:#e5e7eb;
       --text-main:#0f172a;
       --text-muted:#6b7280;
@@ -92,48 +92,12 @@
       line-height:1.2;
     }
 
-    .header-sub{
-      margin:0;
-      font-size:0.8rem;
-      opacity:0.9;
-    }
-
-    .header-director{
-      margin:0;
-      font-size:0.78rem;
-      opacity:0.9;
-    }
-
     .header-bottom{
       display:flex;
       align-items:center;
-      justify-content:space-between;
+      justify-content:flex-end;
       gap:10px;
       flex-wrap:wrap;
-    }
-
-    .date-chip{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      background:rgba(15,23,42,0.35);
-      padding:6px 12px;
-      border-radius:999px;
-      font-size:0.8rem;
-    }
-
-    .date-chip span{
-      font-weight:500;
-    }
-
-    .date-chip input[type="date"]{
-      border:none;
-      border-radius:999px;
-      padding:4px 8px;
-      font-size:0.8rem;
-      outline:none;
-      background:white;
-      color:#111827;
     }
 
     .role-area{
@@ -162,7 +126,6 @@
       cursor:pointer;
       transition:all 0.15s;
     }
-
     .role-pill.active{
       background:white;
       color:#b91c1c;
@@ -212,10 +175,9 @@
       gap:14px;
       margin-top:18px;
     }
-
     @media(max-width:900px){
       .layout{grid-template-columns:1fr;}
-      .header-bottom{flex-direction:column;align-items:flex-start;}
+      .header-bottom{justify-content:flex-start;}
     }
 
     .card{
@@ -301,11 +263,24 @@
     }
 
     /******** SLOTS ********/
+    .slots-box{
+      padding:6px;
+      border-radius:10px;
+      border:1px dashed #d1d5db;
+      background:#f9fafb;
+    }
+    .slots-help{
+      font-size:0.72rem;
+      color:#6b7280;
+      margin:0 0 4px;
+    }
     .slots-wrap{
       display:flex;
       flex-wrap:wrap;
       gap:8px;
+      min-height:34px;
     }
+
     .slot-pill{
       padding:6px 12px;
       border-radius:999px;
@@ -388,6 +363,32 @@
       border-radius:999px;
       font-size:0.75rem;
     }
+
+    /* Office panel bio */
+    .office-bio{
+      margin-top:4px;
+      margin-bottom:8px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      font-size:0.78rem;
+      color:#374151;
+    }
+    .office-name{
+      font-weight:700;
+      font-size:0.85rem;
+      color:#111827;
+    }
+    .office-role{
+      font-size:0.78rem;
+      color:#4b5563;
+    }
+    .office-section{
+      padding:6px 8px;
+      border-radius:10px;
+      background:#f9fafb;
+      border:1px solid #e5e7eb;
+    }
   </style>
 </head>
 
@@ -406,18 +407,11 @@
         <div class="header-title-block">
           <div class="header-institute">DR. D. Y. PATIL B-SCHOOL (DPGU)</div>
           <h1 class="header-main-title">Director's Appointment Portal</h1>
-          <p class="header-sub">Office of the Director · Pune</p>
-          <p class="header-director">Director: <strong>Dr. Raja Roy Choudhury</strong></p>
         </div>
       </div>
     </div>
 
     <div class="header-bottom">
-      <div class="date-chip">
-        <span>Date:</span>
-        <input type="date" id="datePicker" />
-      </div>
-
       <div class="role-area">
         <div class="role-switch">
           <button class="role-pill active" data-role="visitor">Visitor</button>
@@ -443,13 +437,28 @@
         <h2>Office Panel</h2>
         <span class="tag" id="roleTag">Visitor mode</span>
       </div>
-      <p style="font-size:0.75rem;color:var(--text-muted);">
-        EA can approve/reject requests & block time. Director sees upcoming approved appointments only.
+
+      <div class="office-bio">
+        <div class="office-section">
+          <div class="office-name">Dr. Raja Roy Choudhury</div>
+          <div class="office-role">Director, Dr. D. Y. Patil B-School (DPGU)</div>
+          <div class="office-role">DPGU School of Business &amp; Strategy and School of Liberal Arts</div>
+        </div>
+
+        <div class="office-section">
+          <div class="office-name">Ganesh Pathak</div>
+          <div class="office-role">Executive Assistant to Director, Director's Office</div>
+          <div class="office-role">Contact: 8421559109 · ganesh.pathak@dpu.edu.in</div>
+        </div>
+      </div>
+
+      <p style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">
+        Use the role switch above to view the portal as a Visitor, Executive Assistant (EA), or Director.
       </p>
 
       <!-- Director view -->
-      <div id="directorPanel" style="display:none;">
-        <h3 style="margin:8px 0;font-size:0.9rem;">Upcoming Approved Visitors</h3>
+      <div id="directorPanel" style="display:none;margin-top:8px;">
+        <h3 style="margin:6px 0;font-size:0.9rem;">Upcoming Approved Visitors</h3>
         <table>
           <thead>
             <tr><th>When</th><th>Visitor</th><th>Purpose</th></tr>
@@ -459,8 +468,8 @@
       </div>
 
       <!-- EA view -->
-      <div id="eaPanel" style="display:none;">
-        <h3 style="margin:8px 0;font-size:0.9rem;">All Visits & Blocked Slots</h3>
+      <div id="eaPanel" style="display:none;margin-top:8px;">
+        <h3 style="margin:6px 0;font-size:0.9rem;">All Visits &amp; Blocked Slots</h3>
         <table>
           <thead>
             <tr>
@@ -493,13 +502,6 @@
         </div>
         <div id="blockMsg" class="alert alert-success">Slot blocked successfully.</div>
       </div>
-
-      <!-- Visitor info -->
-      <div id="visitorInfo">
-        <p style="font-size:0.75rem;color:var(--text-muted);margin-top:6px;">
-          Please use the form on the right to request an appointment with the Director.
-        </p>
-      </div>
     </section>
 
     <!-- RIGHT: VISITOR FORM -->
@@ -510,6 +512,11 @@
       </div>
 
       <form id="visitForm">
+        <div class="field">
+          <label>Select date for appointment *</label>
+          <input type="date" id="datePicker" required />
+        </div>
+
         <div class="field">
           <label>Name *</label>
           <input id="visitorName" required />
@@ -533,11 +540,18 @@
             <option value="urgent">Urgent</option>
           </select>
         </div>
+
         <div class="field">
           <label>Available Slots *</label>
-          <div class="slots-wrap" id="slotContainer"></div>
+          <div class="slots-box">
+            <p class="slots-help">
+              Slots depend on the selected date. Grey = booked/blocked · Orange = under review · Red = your selection.
+            </p>
+            <div class="slots-wrap" id="slotContainer"></div>
+          </div>
           <input type="hidden" id="selectedSlot" />
         </div>
+
         <div class="field">
           <label>Purpose *</label>
           <textarea id="purpose" required></textarea>
@@ -586,6 +600,7 @@
 
   function setTodayDate(){
     const dp=document.getElementById("datePicker");
+    if(!dp) return;
     const d=new Date();
     const y=d.getFullYear();
     const m=String(d.getMonth()+1).padStart(2,'0');
@@ -601,9 +616,13 @@
   function renderSlots(){
     const cont=document.getElementById("slotContainer");
     const selected=document.getElementById("selectedSlot");
-    if(!cont) return;
+    if(!cont || !selected) return;
     cont.innerHTML="";
     selected.value="";
+
+    if(!currentDateKey){
+      return;
+    }
 
     const todayItems=getItemsForDate(currentDateKey);
     const map={};
@@ -649,9 +668,6 @@
       role==="visitor" ? "Visitor mode" :
       role==="ea" ? "Executive Assistant mode" : "Director mode";
 
-    document.getElementById("visitorInfo").style.display =
-      role==="visitor" ? "block" : "none";
-
     document.getElementById("eaPanel").style.display =
       role==="ea" ? "block" : "none";
 
@@ -693,6 +709,7 @@
       ev.preventDefault();
       ok.style.display=err.style.display="none";
 
+      const dateVal=document.getElementById("datePicker").value;
       const name=document.getElementById("visitorName").value.trim();
       const phone=document.getElementById("visitorPhone").value.trim();
       const email=document.getElementById("visitorEmail").value.trim();
@@ -701,10 +718,12 @@
       const purpose=document.getElementById("purpose").value.trim();
       const time=document.getElementById("selectedSlot").value;
 
-      if(!name||!phone||!email||!dept||!urg||!purpose||!time){
+      if(!dateVal||!name||!phone||!email||!dept||!urg||!purpose||!time){
         err.style.display="block";
         return;
       }
+
+      currentDateKey=dateVal;
 
       const res=await callApi({
         action:"addVisit",
@@ -717,7 +736,9 @@
         ok.style.display="block";
         form.reset();
         document.getElementById("selectedSlot").value="";
+        currentDateKey=dateVal; // keep same date
         await loadAll();
+        document.getElementById("datePicker").value=dateVal;
       } else err.style.display="block";
     });
   }
