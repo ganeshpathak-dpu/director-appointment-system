@@ -524,22 +524,24 @@
   });
 
   // ===== Load requests from backend and filter by date =====
-  async function loadRequestsFromServer(dateKey) {
-    try {
-      const data = await apiPost({ action: "get" });
-      if (data && data.success) {
-        const all = data.data || [];
-        currentRequests = all.filter(r => r.date === dateKey);
-      } else {
-        currentRequests = [];
-      }
-    } catch (err) {
-      console.error("Error loading requests", err);
+ async function loadRequestsFromServer(dateKey) {
+  try {
+    const data = await apiPost({ action: "get" });
+    console.log("GET data from server:", data);
+    if (data && data.success) {
+      // Show ALL requests, ignore date for now
+      currentRequests = data.data || [];
+    } else {
       currentRequests = [];
     }
-    renderRequests();
-    renderAdminTable();
+  } catch (err) {
+    console.error("Error loading requests", err);
+    currentRequests = [];
   }
+  renderRequests();
+  renderAdminTable();
+}
+
 
   // ===== Visitor list =====
   function renderRequests() {
