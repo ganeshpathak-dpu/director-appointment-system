@@ -526,14 +526,20 @@
   // ===== Load requests from backend and filter by date =====
  async function loadRequestsFromServer(dateKey) {
   try {
-    const data = await apiPost({ action: "get" });
-    console.log("GET data from server:", data);
-    if (data && data.success) {
-      // Show ALL requests, ignore date for now
-      currentRequests = data.data || [];
+    const res = await apiPost({ action: "get" });
+    console.log("GET data from server:", res);
+
+    let rows = [];
+    if (res && res.success && Array.isArray(res.data)) {
+      rows = res.data;
+    } else if (Array.isArray(res)) {
+      rows = res;
     } else {
-      currentRequests = [];
+      rows = [];
     }
+
+    // TEMP: ignore date, show all rows
+    currentRequests = rows;
   } catch (err) {
     console.error("Error loading requests", err);
     currentRequests = [];
@@ -541,6 +547,7 @@
   renderRequests();
   renderAdminTable();
 }
+
 
 
   // ===== Visitor list =====
