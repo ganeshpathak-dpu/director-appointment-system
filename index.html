@@ -616,7 +616,8 @@
 </div>
 
 <script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbzTVnRaR6QSXlW2IFVKnOJL0bcp0CSo6XMt7zZjtua1LpjQj2pY6ILdL3oULP0K3JL8/exec";  // <-- put your Apps Script URL
+  // TODO: put your real Apps Script Web App URL here
+  const API_URL = "https://script.google.com/macros/s/AKfycbzTVnRaR6QSXlW2IFVKnOJL0bcp0CSo6XMt7zZjtua1LpjQj2pY6ILdL3oULP0K3JL8/exec";
   const ROLE_PINS = { ea: "1111", director: "2222" };
   const SLOT_LIST = ["10:00","10:30","11:00","11:30","12:00","12:30","13:00"];
 
@@ -625,26 +626,30 @@
   let currentDateKey="";
 
   async function callApi(params){
-    const body=new URLSearchParams(params);
-    const res=await fetch(API_URL,{
-      method:"POST",
-      headers:{"Content-Type":"application/x-www-form-urlencoded"},
-      body
-    });
-    return res.json();
+    try{
+      const body=new URLSearchParams(params);
+      const res=await fetch(API_URL,{
+        method:"POST",
+        headers:{"Content-Type":"application/x-www-form-urlencoded"},
+        body
+      });
+      const data=await res.json();
+      return data;
+    }catch(e){
+      console.error("callApi network error",e);
+      return {success:false,error:"Network error: "+e.message};
+    }
   }
 
   async function loadAll(){
-    try{
-      const res=await callApi({action:"listAll"});
-      if(res && res.success && Array.isArray(res.data)){
-        allItems=res.data;
-      }else{
-        allItems=[];
-      }
-    }catch(e){
-      console.error("loadAll error",e);
+    const res=await callApi({action:"listAll"});
+    if(res && res.success && Array.isArray(res.data)){
+      allItems=res.data;
+    }else{
       allItems=[];
+      if(res && res.error){
+        console.warn("listAll error from server:",res.error);
+      }
     }
     renderSlots();
     renderEAList();
@@ -757,7 +762,9 @@
 
     form.addEventListener("submit", async ev=>{
       ev.preventDefault();
-      ok.style.display=err.style.display="none";
+      ok.style.display="none";
+      err.style.display="none";
+      err.textContent="Error submitting. Please check fields & try again.";
 
       const dateVal=document.getElementById("datePicker").value;
       const name=document.getElementById("visitorName").value.trim();
@@ -768,35 +775,42 @@
       const purpose=document.getElementById("purpose").value.trim();
       const time=document.getElementById("selectedSlot").value;
 
-      if(!dateVal||!name||!phone||!email||!dept||!urg||!purpose||!time){
+      if(!dateVal||!name||!phone||!email||!dept||!urg||!purpose){
+        err.textContent="Please fill all required fields.";
+        err.style.display="block";
+        return;
+      }
+      if(!time){
+        err.textContent="Please select an available time slot.";
         err.style.display="block";
         return;
       }
 
       currentDateKey=dateVal;
 
-      try{
-        const res=await callApi({
-          action:"addVisit",
-          name,phone,email,dept,urgency:urg,purpose,
-          date:currentDateKey,
-          time
-        });
+      const res=await callApi({
+        action:"addVisit",
+        name,
+        phone,
+        email,
+        dept,
+        urgency:urg,
+        purpose,
+        date:currentDateKey,
+        time
+      });
 
-        if(res.success){
-          ok.style.display="block";
-          form.reset();
-          document.getElementById("selectedSlot").value="";
-          await loadAll();
-          document.getElementById("datePicker").value=dateVal;
-          currentDateKey=dateVal;
-          renderSlots();
-        } else {
-          console.error("addVisit error",res);
-          err.style.display="block";
-        }
-      }catch(e){
-        console.error("submit error",e);
+      if(res && res.success){
+        ok.style.display="block";
+        form.reset();
+        document.getElementById("selectedSlot").value="";
+        await loadAll();
+        document.getElementById("datePicker").value=dateVal;
+        currentDateKey=dateVal;
+        renderSlots();
+      } else {
+        console.error("addVisit error",res);
+        err.textContent = "Server error: " + ((res && res.error) ? res.error : "Unknown error");
         err.style.display="block";
       }
     });
@@ -866,15 +880,13 @@
   }
 
   async function updateStatus(id,status){
-    try{
-      const res=await callApi({action:"updateStatus",id,status});
-      if(res.success){
-        await loadAll();
-        alert("Updated.");
-      } else alert("Failed: " + res.error);
-    }catch(e){
-      console.error("updateStatus error",e);
-      alert("Error updating status.");
+    const res=await callApi({action:"updateStatus",id,status});
+    if(res && res.success){
+      await loadAll();
+      alert("Updated.");
+    } else {
+      console.error("updateStatus error",res);
+      alert("Failed to update: " + (res && res.error ? res.error : "Unknown error"));
     }
   }
 
@@ -925,15 +937,13 @@
 
       if(!date||!time){ alert("Select date & time."); return; }
 
-      try{
-        const res=await callApi({action:"blockSlot",date,time,reason});
-        if(res.success){
-          document.getElementById("blockMsg").style.display="block";
-          await loadAll();
-        } else alert("Failed to block.");
-      }catch(e){
-        console.error("block error",e);
-        alert("Error blocking slot.");
+      const res=await callApi({action:"blockSlot",date,time,reason});
+      if(res && res.success){
+        document.getElementById("blockMsg").style.display="block";
+        await loadAll();
+      } else {
+        console.error("blockSlot error",res);
+        alert("Failed to block slot: " + (res && res.error ? res.error : "Unknown error"));
       }
     };
   }
