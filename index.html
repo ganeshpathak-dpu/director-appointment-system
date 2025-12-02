@@ -436,7 +436,8 @@
     <div class="header-top">
       <div class="header-logo-wrap">
         <div class="header-logo-box">
-          <img src="https://dypbs.edu.in/assets/img/B-school-logo-ver-5.png" alt="DPU Logo" />
+          <!-- Replace with actual logo URL if needed -->
+          <img src="PUT_OFFICIAL_LOGO_URL_HERE" alt="DPU Logo" />
         </div>
 
         <div class="header-title-block">
@@ -475,8 +476,9 @@
       <div class="office-profile">
         <!-- Director with photo -->
         <div class="office-director-block">
+          <!-- Sir.png should be in same folder as index.html in your repo -->
           <img
-            src="https://github.com/ganeshpathak-dpu/director-appointment-system/blob/main/Sir.png"
+            src="Sir.png"
             alt="Dr. Raja Roy Choudhury"
             class="office-avatar"
           />
@@ -517,7 +519,7 @@
         <table>
           <thead>
             <tr>
-              <th>Time/Date</th>
+              <th>When</th>
               <th>Visitor</th>
               <th>Purpose</th>
               <th>Urgency</th>
@@ -616,14 +618,31 @@
 </div>
 
 <script>
-  // TODO: put your real Apps Script Web App URL here
-  const API_URL = "https://script.google.com/macros/s/AKfycbzTVnRaR6QSXlW2IFVKnOJL0bcp0CSo6XMt7zZjtua1LpjQj2pY6ILdL3oULP0K3JL8/exec";
+  // IMPORTANT: replace with your real Apps Script Web App URL (.../exec)
+  const API_URL = "YOUR_WEB_APP_URL_HERE";
+
   const ROLE_PINS = { ea: "1111", director: "2222" };
   const SLOT_LIST = ["10:00","10:30","11:00","11:30","12:00","12:30","13:00"];
 
   let currentRole="visitor";
   let allItems=[];
   let currentDateKey="";
+
+  // Format "2025-11-30" + "16:00" => "30-11-2025 · 4:00 PM"
+  function formatDateTime(dateStr, timeStr) {
+    try {
+      if (!dateStr || !timeStr) return "";
+      const [year, month, day] = dateStr.split("-");
+      let [hh, mm] = timeStr.split(":");
+      let hour = parseInt(hh, 10);
+      const ampm = hour >= 12 ? "PM" : "AM";
+      hour = hour % 12;
+      if (hour === 0) hour = 12;
+      return `${day}-${month}-${year} · ${hour}:${mm} ${ampm}`;
+    } catch (e) {
+      return dateStr + " " + timeStr;
+    }
+  }
 
   async function callApi(params){
     try{
@@ -830,7 +849,7 @@
       const tr=document.createElement("tr");
 
       const td1=document.createElement("td");
-      td1.innerHTML=`${it.time}<br><span style="color:#9ca3af">${it.date}</span>`;
+      td1.textContent = formatDateTime(it.date, it.time);
 
       const td2=document.createElement("td");
       if(it.recordType==="block"){
@@ -892,7 +911,7 @@
 
   function sendWhatsApp(phone,name,date,time){
     const clean=(phone||"").replace(/\D/g,'');
-    const msg=`Dear ${name}, your appointment with the Director is confirmed on ${date} at ${time}.`;
+    const msg=`Dear ${name}, your appointment with the Director is confirmed on ${formatDateTime(date,time)}.`;
     const url=`https://wa.me/${clean}?text=${encodeURIComponent(msg)}`;
     window.open(url,"_blank");
   }
@@ -915,7 +934,7 @@
     list.forEach(it=>{
       const tr=document.createElement("tr");
       tr.innerHTML = `
-        <td>${it.time}<br><span style="color:#999">${it.date}</span></td>
+        <td>${formatDateTime(it.date,it.time)}</td>
         <td><strong>${it.name}</strong><br>${it.department}<br>
             <span style="color:#999">${it.urgency}</span></td>
         <td>${it.purpose}</td>`;
