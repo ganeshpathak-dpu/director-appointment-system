@@ -5,7 +5,6 @@
   <title>Director's Appointment Portal | Dr. D. Y. Patil B-School</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    /* (styles unchanged from previous; kept concise for readability) */
     *{box-sizing:border-box;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
     :root{--card:#fff;--accent:#b91c1c;--border:#e5e7eb;--muted:#6b7280}
     body{margin:0;background:radial-gradient(circle at top left,#b91c1c 0,#0b1120 45%,#020617 100%);color:#0f172a;min-height:100vh}
@@ -75,7 +74,7 @@
 
         <div class="office-profile">
           <div class="office-director-block">
-            <!-- Use raw.githubusercontent link or local Sir.png in repo -->
+            <!-- Director photo -->
             <img id="directorPhoto" class="office-avatar" src="https://raw.githubusercontent.com/ganeshpathak-dpu/director-appointment-system/main/Sir.png" alt="Dr. Raja Roy Choudhury">
             <div style="font-weight:700">Dr. Raja Roy Choudhury</div>
             <div style="color:#4b5563;font-size:0.9rem">Director, Dr. D. Y. Patil B-School (DPGU)</div>
@@ -93,7 +92,7 @@
 
         <p style="color:var(--muted);margin-top:10px;font-size:0.9rem">Use the role switch above to view as Visitor, Executive Assistant (EA), or Director. EA and Director need PIN.</p>
 
-        <!-- Director's small dashboard -->
+        <!-- Director's dashboard -->
         <div id="directorPanel" style="display:none;margin-top:12px">
           <h3 style="margin:6px 0">Upcoming Approved Visitors</h3>
           <table><thead><tr><th>When</th><th>Visitor</th><th>Purpose</th></tr></thead><tbody id="directorBody"></tbody></table>
@@ -118,8 +117,8 @@
         </div>
       </section>
 
-      <!-- RIGHT -->
-      <section class="card">
+      <!-- RIGHT (Visitor form) -->
+      <section class="card" id="visitorCard">
         <div class="card-title"><h2>Request Appointment</h2><div style="background:#fee2e2;color:var(--accent);padding:4px 8px;border-radius:999px;font-weight:600">Visitor form</div></div>
 
         <form id="visitForm">
@@ -155,32 +154,17 @@
   </div>
 
 <script>
-/*
-  IMPORTANT:
-  - Replace API_URL with your Apps Script web app URL (the /exec link).
-  - Director photo uses raw.githubusercontent URL above; if you keep Sir.png in the repo root this works.
-*/
-
-const API_URL = "https://script.google.com/macros/s/AKfycbzTVnRaR6QSXlW2IFVKnOJL0bcp0CSo6XMt7zZjtua1LpjQj2pY6ILdL3oULP0K3JL8/exec"; // <-- set this
+const API_URL = "https://script.google.com/macros/s/AKfycbzTVnRaR6QSXlW2IFVKnOJL0bcp0CSo6XMt7zZjtua1LpjQj2pY6ILdL3oULP0K3JL8/exec";
 const ROLE_PINS = { ea: "1111", director: "2222" };
 const SLOT_LIST = ["10:00","10:30","11:00","11:30","12:00","12:30","13:00"];
 
 let allItems = [];
 let currentDateKey = "";
 
-/* -----------------------------
-   Robust parsing & formatting
-   Handles:
-     - ISO strings (2025-11-30T18:30:00.000Z)
-     - Date-only strings (2025-11-30)
-     - Time-only strings (05:08:50.000Z)
-     - Numeric serials (Sheets/Excel like 44500.75)
--------------------------------*/
+/* ----- Date helpers ----- */
 function excelSerialToDate(serial){
-  // serial may be number (days since 1899-12-30). Works for Google Sheets/Excel common serial.
   const days = Math.floor(Number(serial));
   const fraction = Number(serial) - days;
-  // UTC base: 1899-12-30
   const base = Date.UTC(1899,11,30,0,0,0);
   const ms = days * 24 * 3600 * 1000 + Math.round(fraction * 24 * 3600 * 1000);
   return new Date(base + ms);
@@ -188,90 +172,71 @@ function excelSerialToDate(serial){
 
 function parseMaybeDate(input){
   if(input === null || input === undefined || input === "") return null;
-  // if already Date
   if(input instanceof Date) return input;
-  // numbers (or numeric string)
+
   if(typeof input === "number" || /^\d+(\.\d+)?$/.test(String(input))){
     const n = Number(input);
-    // if looks small (e.g., epoch ms) — treat carefully:
-    if(n > 1e12){ // probably epoch ms
+    if(n > 1e12){
       return new Date(n);
     }
-    // if reasonable serial or small epoch seconds:
-    if(n > 36500 && n < 200000){ // likely serial (days)
+    if(n > 36500 && n < 200000){
       return excelSerialToDate(n);
     }
-    // try Date constructor fallback
     const d2 = new Date(n);
     if(!isNaN(d2)) return d2;
-    // else serial fallback
     return excelSerialToDate(n);
   }
-  // ISO / string forms
+
   if(typeof input === "string"){
-    // If string contains 'T' or ends with Z -> ISO
     if(/\d{4}-\d{2}-\d{2}T/.test(input) || /Z$/.test(input) || /\+\d{2}:\d{2}$/.test(input)){
       const d = new Date(input);
       if(!isNaN(d)) return d;
     }
-    // date only: YYYY-MM-DD
     if(/^\d{4}-\d{2}-\d{2}$/.test(input)){
       const d = new Date(input + "T00:00:00");
       if(!isNaN(d)) return d;
     }
-    // time only: HH:MM or HH:MM:SS
     if(/^\d{1,2}:\d{2}(:\d{2})?$/.test(input)){
-      // return a Date with today's date + that time
       const parts = input.split(":").map(Number);
       const now = new Date();
       now.setHours(parts[0]||0, parts[1]||0, parts[2]||0, 0);
       return now;
     }
-    // fallback: Date constructor
     const df = new Date(input);
     if(!isNaN(df)) return df;
   }
   return null;
 }
 
-// Normalize using both dateStr and timeStr inputs and return formatted "DD-MM-YYYY · h:mm AM/PM"
+// result: "DD-MM-YYYY · h:mm AM/PM"
 function formatDateTimeFlexible(dateStr, timeStr){
   try{
     let dateObj = parseMaybeDate(dateStr);
     let timeObj = parseMaybeDate(timeStr);
 
-    // If dateObj is present and is a date with meaningless year (like 1899), check timeObj for real date
     if(dateObj && dateObj.getFullYear && dateObj.getFullYear() <= 1900){
-      // try to get date from timeObj when timeObj has reasonable year
       if(timeObj && timeObj.getFullYear && timeObj.getFullYear() > 1900){
         dateObj = timeObj;
         timeObj = null;
       }
     }
 
-    // If no dateObj but timeObj looks like full date -> use it
     if(!dateObj && timeObj && timeObj.getFullYear && timeObj.getFullYear() > 1900){
       dateObj = timeObj;
       timeObj = null;
     }
 
-    // If still no dateObj fallback to today
     if(!dateObj) dateObj = new Date();
 
-    // If timeStr contains HH:MM we set hours/mins
     if(typeof timeStr === "string" && /^\d{1,2}:\d{2}/.test(timeStr)){
       const [hh, mm] = timeStr.split(":").map(Number);
       if(!Number.isNaN(hh)) dateObj.setHours(hh);
       if(!Number.isNaN(mm)) dateObj.setMinutes(mm);
       dateObj.setSeconds(0); dateObj.setMilliseconds(0);
     } else if(timeObj){
-      // use timeObj's hours/mins/seconds
       dateObj.setHours(timeObj.getHours(), timeObj.getMinutes(), timeObj.getSeconds(), 0);
-    } else {
-      // if dateObj had time already, leave it
     }
 
-    // Format to "D-M-YYYY · h:mm AM/PM" (single digit day/month allowed)
     const day = String(dateObj.getDate()).padStart(2,"0");
     const month = String(dateObj.getMonth()+1).padStart(2,"0");
     const year = dateObj.getFullYear();
@@ -284,15 +249,11 @@ function formatDateTimeFlexible(dateStr, timeStr){
 
     return `${day}-${month}-${year} · ${hour}:${minute} ${ampm}`;
   }catch(e){
-    // fallback simple
     return (dateStr ? String(dateStr) : "") + " " + (timeStr ? String(timeStr) : "");
   }
 }
 
-/* -----------------------------
-   API + UI logic (unchanged flow)
--------------------------------*/
-
+/* ----- API + core UI ----- */
 async function callApi(params){
   try{
     const body = new URLSearchParams(params);
@@ -350,17 +311,30 @@ function renderSlots(){
 
     if(blocked || approved) b.classList.add("booked");
     else if(pending) b.classList.add("pending");
-    else b.addEventListener("click", ()=>{ sel.value = time; Array.from(cont.children).forEach(x=>x.classList.remove("selected")); b.classList.add("selected"); });
+    else b.addEventListener("click", ()=>{
+      sel.value = time;
+      Array.from(cont.children).forEach(x=>x.classList.remove("selected"));
+      b.classList.add("selected");
+    });
 
     cont.appendChild(b);
   });
 }
 
+/* ----- Role handling (Director sees only dashboard) ----- */
 function setRole(role){
   document.querySelectorAll(".role-pill").forEach(p => p.classList.toggle("active", p.dataset.role===role));
-  document.getElementById("roleTag").textContent = role==="visitor" ? "Visitor mode" : role==="ea" ? "Executive Assistant mode" : "Director mode";
+  document.getElementById("roleTag").textContent =
+    role==="visitor" ? "Visitor mode" :
+    role==="ea" ? "Executive Assistant mode" : "Director mode";
+
   document.getElementById("eaPanel").style.display = role==="ea" ? "block" : "none";
   document.getElementById("directorPanel").style.display = role==="director" ? "block" : "none";
+
+  const visitorCard = document.getElementById("visitorCard");
+  if(visitorCard){
+    visitorCard.style.display = (role === "director") ? "none" : "block";
+  }
 }
 
 function setupRoleControls(){
@@ -382,6 +356,7 @@ function setupRoleControls(){
   });
 }
 
+/* ----- Visitor form (with formatted date/time for emails) ----- */
 function setupVisitorForm(){
   const form = document.getElementById("visitForm");
   const ok = document.getElementById("formOk");
@@ -390,6 +365,7 @@ function setupVisitorForm(){
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     ok.style.display = "none"; err.style.display = "none";
+
     const dateVal = document.getElementById("datePicker").value;
     const name = document.getElementById("visitorName").value.trim();
     const phone = document.getElementById("visitorPhone").value.trim();
@@ -398,13 +374,37 @@ function setupVisitorForm(){
     const urg = document.getElementById("urgency").value;
     const purpose = document.getElementById("purpose").value.trim();
     const time = document.getElementById("selectedSlot").value;
+
     if(!dateVal||!name||!phone||!email||!dept||!urg||!purpose){
       err.textContent = "Please fill all required fields."; err.style.display = "block"; return;
     }
-    if(!time){ err.textContent = "Please select an available time slot."; err.style.display = "block"; return; }
+    if(!time){
+      err.textContent = "Please select an available time slot."; err.style.display = "block"; return;
+    }
 
     currentDateKey = dateVal;
-    const res = await callApi({ action:"addVisit", name, phone, email, dept, urgency:urg, purpose, date:currentDateKey, time });
+
+    // NEW: nicely formatted values for email / WhatsApp
+    const displayDateTime = formatDateTimeFlexible(dateVal, time);  // "DD-MM-YYYY · h:mm AM/PM"
+    const parts = displayDateTime.split(" · ");
+    const displayDate = parts[0] || "";
+    const displayTime = parts[1] || "";
+
+    const res = await callApi({
+      action:"addVisit",
+      name,
+      phone,
+      email,
+      dept,
+      urgency:urg,
+      purpose,
+      date:currentDateKey,   // keep raw date for Sheets
+      time,                  // keep raw time for slots
+      displayDate,           // NEW: for email body
+      displayTime,           // NEW: for email body
+      displayDateTime        // NEW: combined, if you prefer
+    });
+
     if(res && res.success){
       ok.style.display = "block";
       form.reset();
@@ -421,26 +421,38 @@ function setupVisitorForm(){
   });
 }
 
+/* ----- EA list / actions ----- */
 function renderEAList(){
   const body = document.getElementById("eaBody");
   if(!body) return;
   body.innerHTML = "";
-  if(!allItems.length){ body.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#9ca3af;padding:10px">No records.</td></tr>`; return; }
+  if(!allItems.length){
+    body.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#9ca3af;padding:10px">No records.</td></tr>`;
+    return;
+  }
   allItems.forEach(it=>{
     const tr = document.createElement("tr");
     const td1 = document.createElement("td"); td1.textContent = formatDateTimeFlexible(it.date, it.time);
     const td2 = document.createElement("td");
-    if(it.recordType==="block"){ td2.innerHTML = "<strong>Blocked</strong><br><span style='color:#666'>Director not available</span>"; }
-    else { td2.innerHTML = `<strong>${it.name}</strong><br>${it.department || ""}<br><span style="color:#999">${it.phone || ""}</span>`; }
+    if(it.recordType==="block"){
+      td2.innerHTML = "<strong>Blocked</strong><br><span style='color:#666'>Director not available</span>";
+    } else {
+      td2.innerHTML = `<strong>${it.name}</strong><br>${it.department || ""}<br><span style="color:#999">${it.phone || ""}</span>`;
+    }
     const td3 = document.createElement("td"); td3.textContent = it.purpose || "";
-    const td4 = document.createElement("td"); td4.innerHTML = it.recordType==="block" ? "-" : `<span style="background:${it.urgency==="urgent"?"#fee2e2":"#eff6ff"};padding:4px;border-radius:8px">${it.urgency||""}</span>`;
-    const td5 = document.createElement("td"); const st = document.createElement("span");
+    const td4 = document.createElement("td");
+    td4.innerHTML = it.recordType==="block"
+      ? "-"
+      : `<span style="background:${it.urgency==="urgent"?"#fee2e2":"#eff6ff"};padding:4px;border-radius:8px">${it.urgency||""}</span>`;
+    const td5 = document.createElement("td");
+    const st = document.createElement("span");
     st.style.padding = "4px 8px"; st.style.borderRadius="999px"; st.style.color="#fff";
     if(it.recordType==="block"){ st.style.background="#6b7280"; st.textContent = "Blocked"; }
     else if(it.status==="pending"){ st.style.background="#f59e0b"; st.textContent="Pending"; }
     else if(it.status==="approved"){ st.style.background="#16a34a"; st.textContent="Approved"; }
     else { st.style.background="#b91c1c"; st.textContent = it.status ? it.status.charAt(0).toUpperCase()+it.status.slice(1) : "Unknown"; }
     td5.appendChild(st);
+
     const td6 = document.createElement("td");
     if(it.recordType==="visit" && it.status==="pending"){
       td6.innerHTML = `<button class="btn-small" style="background:#16a34a;color:#fff;margin-right:6px" onclick="updateStatus('${it.id}','approved')">Approve</button>
@@ -456,7 +468,8 @@ function renderEAList(){
 
 async function updateStatus(id,status){
   const res = await callApi({ action:"updateStatus", id, status });
-  if(res && res.success){ await loadAll(); alert("Updated"); } else { alert("Failed: " + ((res && res.error) ? res.error : "Unknown")); }
+  if(res && res.success){ await loadAll(); alert("Updated"); }
+  else { alert("Failed: " + ((res && res.error) ? res.error : "Unknown")); }
 }
 
 function sendWhatsApp(phone,name,date,time){
@@ -466,13 +479,18 @@ function sendWhatsApp(phone,name,date,time){
   window.open(url, "_blank");
 }
 
+/* ----- Director list ----- */
 function renderDirectorList(){
   const body = document.getElementById("directorBody");
   if(!body) return;
   body.innerHTML = "";
   const today = new Date().toISOString().slice(0,10);
-  const list = (allItems.filter(it => it.recordType === "visit" && it.status === "approved" && (String(it.date) >= today))).sort((a,b) => (String(a.date)+a.time).localeCompare(String(b.date)+b.time));
-  if(!list.length){ body.innerHTML = `<tr><td colspan="3" style="text-align:center;color:#9ca3af;padding:10px">No upcoming visitors.</td></tr>`; return; }
+  const list = (allItems.filter(it => it.recordType === "visit" && it.status === "approved" && (String(it.date) >= today)))
+    .sort((a,b) => (String(a.date)+a.time).localeCompare(String(b.date)+b.time));
+  if(!list.length){
+    body.innerHTML = `<tr><td colspan="3" style="text-align:center;color:#9ca3af;padding:10px">No upcoming visitors.</td></tr>`;
+    return;
+  }
   list.forEach(it => {
     const tr = document.createElement("tr");
     tr.innerHTML = `<td>${formatDateTimeFlexible(it.date,it.time)}</td>
@@ -482,15 +500,23 @@ function renderDirectorList(){
   });
 }
 
+/* ----- Block slots ----- */
 function setupBlockControls(){
-  SLOT_LIST.forEach(t => { const o = document.createElement("option"); o.value = o.textContent = t; document.getElementById("blockTime").appendChild(o); });
+  SLOT_LIST.forEach(t => {
+    const o = document.createElement("option");
+    o.value = o.textContent = t;
+    document.getElementById("blockTime").appendChild(o);
+  });
   document.getElementById("blockBtn").addEventListener("click", async ()=>{
     const date = document.getElementById("blockDate").value || currentDateKey;
     const time = document.getElementById("blockTime").value;
     const reason = document.getElementById("blockReason").value || "Not available";
     if(!date||!time){ alert("Select date & time"); return; }
     const res = await callApi({ action:"blockSlot", date, time, reason });
-    if(res && res.success){ document.getElementById("blockMsg").style.display = "block"; await loadAll(); } else alert("Failed: " + ((res && res.error) ? res.error : "Unknown"));
+    if(res && res.success){
+      document.getElementById("blockMsg").style.display = "block";
+      await loadAll();
+    } else alert("Failed: " + ((res && res.error) ? res.error : "Unknown"));
   });
 }
 
@@ -505,6 +531,10 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   if(dp) dp.addEventListener("change", (e)=>{ currentDateKey = e.target.value; renderSlots(); });
   setRole("visitor");
 });
+
+// expose for onclick
+window.updateStatus = updateStatus;
+window.sendWhatsApp = sendWhatsApp;
 </script>
 </body>
 </html>
