@@ -1,675 +1,1371 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
   <title>Director's Appointment Portal | Dr. D. Y. Patil B-School</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <style>
-    *{box-sizing:border-box;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-    :root{--card:#fff;--accent:#b91c1c;--border:#e5e7eb;--muted:#6b7280}
-    body{margin:0;background:radial-gradient(circle at top left,#b91c1c 0,#0b1120 45%,#020617 100%);color:#0f172a;min-height:100vh}
-    .page{max-width:1150px;margin:18px auto;padding:18px}
-    .header-card{background:linear-gradient(130deg,rgba(185,28,28,0.94),rgba(15,23,42,0.96));padding:14px;border-radius:18px;color:#fff}
-    .header-logo-box{background:#fff;padding:6px;border-radius:12px}
-    .header-logo-box img{height:48px}
-    .header-title-block{margin-left:8px}
-    .header-institute{font-size:0.78rem;opacity:0.9;text-transform:uppercase}
-    .header-main-title{margin:0;font-size:1.3rem}
-    .role-switch{display:inline-flex;background:rgba(255,255,255,0.06);border-radius:999px;padding:3px}
-    .role-pill{padding:6px 12px;border-radius:999px;border:none;background:transparent;color:#f3f4f6;cursor:pointer;opacity:.85}
-    .role-pill.active{background:#fff;color:var(--accent);box-shadow:0 6px 14px rgba(0,0,0,.2)}
-    .layout{display:grid;grid-template-columns:1.8fr 1.8fr;gap:14px;margin-top:16px}
-    @media(max-width:900px){.layout{grid-template-columns:1fr}}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;box-shadow:0 8px 20px rgba(2,6,23,0.2)}
-    .card-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-    label{display:block;font-size:0.85rem;color:#374151;margin-bottom:6px}
-    input,select,textarea{width:100%;padding:8px;border-radius:10px;border:1px solid #d1d5db;background:#f8fafc}
-    .btn-main{background:var(--accent);color:#fff;padding:10px 18px;border-radius:999px;border:none;cursor:pointer}
-    .btn-small{background:#fff;border-radius:999px;padding:6px 10px;border:none;color:var(--accent);cursor:pointer}
-    .slots-box{border:1px dashed #d1d5db;border-radius:10px;padding:8px;background:#fbfdff}
-    .slots-wrap{display:flex;flex-wrap:wrap;gap:8px}
-    .slot-pill{padding:6px 12px;border-radius:999px;background:#f1f5f9;border:1px solid #d1d5db;cursor:pointer}
-    .slot-pill.booked{background:#e5e7eb;color:#9ca3af;cursor:not-allowed}
-    .slot-pill.pending{background:#fff7ed;color:#b45309;cursor:not-allowed}
-    .slot-pill.selected{background:var(--accent);color:#fff}
-    table{width:100%;border-collapse:collapse;font-size:0.9rem}
-    th,td{padding:6px;border-bottom:1px solid #eef2f7}
-    .office-profile{display:flex;flex-direction:column;gap:10px}
-    .office-director-block{display:flex;flex-direction:column;align-items:center;padding:10px;border-radius:10px;background:#fbfdff;border:1px solid #eef2f6}
-    .office-avatar{width:78px;height:78px;border-radius:50%;object-fit:cover;border:2px solid var(--accent)}
-    .office-divider{height:1px;background:#eef2f6;width:100%;margin:6px 0}
-    .alert{display:none;padding:8px;border-radius:8px;margin-top:8px}
-    .alert.success{background:#dcfce7;color:#166534}
-    .alert.error{background:#fee2e2;color:#b91c1c}
+    *{
+      box-sizing:border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
 
-    /* NEW: Director stats cards */
-    .stats-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:8px}
-    @media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-    .stat-card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:8px}
-    .stat-label{font-size:0.75rem;color:#6b7280;text-transform:uppercase}
-    .stat-value{font-size:1.2rem;font-weight:700}
-    .stat-sub{font-size:0.75rem;color:#9ca3af}
+    :root{
+      --bg:#020617;
+      --card:#ffffff;
+      --accent:#b91c1c;
+      --border:#e5e7eb;
+      --text-main:#0f172a;
+      --text-muted:#6b7280;
+    }
 
-    /* NEW: Director table filter pills */
-    .filter-row{display:flex;justify-content:flex-end;gap:6px;margin:4px 0 6px}
-    .filter-pill{border-radius:999px;border:1px solid #e5e7eb;background:#f9fafb;font-size:0.75rem;padding:3px 10px;cursor:pointer}
-    .filter-pill.active{background:#b91c1c;color:#fff;border-color:#b91c1c}
+    body{
+      margin:0;
+      padding:0;
+      background:radial-gradient(circle at top left,#b91c1c 0,#0b1120 45%,#020617 100%);
+      min-height:100vh;
+      color:var(--text-main);
+    }
+
+    .page{
+      max-width:1150px;
+      margin:0 auto;
+      padding:18px 16px 24px;
+    }
+
+    /******** HEADER ********/
+    .header-card{
+      background:linear-gradient(130deg,rgba(185,28,28,0.94),rgba(15,23,42,0.96));
+      padding:14px 18px 16px;
+      border-radius:22px;
+      color:white;
+      box-shadow:0 20px 40px rgba(15,23,42,0.85);
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .header-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+
+    .header-logo-wrap{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .header-logo-box{
+      background:white;
+      border-radius:14px;
+      padding:6px 10px;
+      box-shadow:0 6px 14px rgba(15,23,42,0.4);
+    }
+
+    .header-logo-box img{
+      height:52px;
+      display:block;
+    }
+
+    .header-title-block{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+
+    .header-institute{
+      font-size:0.78rem;
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+      opacity:0.9;
+    }
+
+    .header-main-title{
+      margin:0;
+      font-size:1.4rem;
+      line-height:1.2;
+    }
+
+    .header-bottom{
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .role-area{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      font-size:0.8rem;
+    }
+
+    .role-switch{
+      display:inline-flex;
+      background:rgba(15,23,42,0.45);
+      border-radius:999px;
+      padding:3px;
+    }
+
+    .role-pill{
+      border:none;
+      background:transparent;
+      padding:5px 14px;
+      color:#e5e7eb;
+      font-size:0.75rem;
+      border-radius:999px;
+      opacity:0.7;
+      cursor:pointer;
+      transition:all 0.15s;
+    }
+    .role-pill.active{
+      background:white;
+      color:#b91c1c;
+      opacity:1;
+      box-shadow:0 4px 10px rgba(15,23,42,0.45);
+    }
+
+    .pin-group{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      background:rgba(15,23,42,0.35);
+      padding:5px 8px;
+      border-radius:999px;
+    }
+
+    .pin-input{
+      border:none;
+      border-radius:999px;
+      padding:5px 10px;
+      min-width:140px;
+      font-size:0.76rem;
+      outline:none;
+    }
+
+    .btn-small{
+      background:white;
+      border:none;
+      padding:5px 12px;
+      border-radius:999px;
+      cursor:pointer;
+      font-size:0.76rem;
+      font-weight:600;
+      color:#b91c1c;
+      box-shadow:0 4px 8px rgba(0,0,0,0.25);
+      transition:transform 0.08s, box-shadow 0.12s;
+    }
+    .btn-small:active{
+      transform:scale(0.97);
+      box-shadow:0 2px 4px rgba(0,0,0,0.4);
+    }
+
+    /******** LAYOUT ********/
+    .layout{
+      display:grid;
+      grid-template-columns:1.8fr 1.8fr;
+      gap:14px;
+      margin-top:18px;
+    }
+    @media(max-width:900px){
+      .layout{grid-template-columns:1fr;}
+      .header-bottom{justify-content:flex-start;}
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:14px 14px 16px;
+      box-shadow:0 10px 26px rgba(15,23,42,0.25);
+    }
+
+    .card-title{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .card-title h2{margin:0;font-size:1rem;}
+    .tag{
+      background:#fee2e2;
+      color:#b91c1c;
+      padding:3px 8px;
+      border-radius:999px;
+      font-size:0.7rem;
+      font-weight:600;
+    }
+
+    /******** FORM ********/
+    label{
+      font-size:0.8rem;
+      color:#374151;
+    }
+    .field{margin-bottom:10px;}
+
+    input,select,textarea{
+      width:100%;
+      padding:8px 9px;
+      border-radius:10px;
+      background:#f8fafc;
+      border:1px solid #d1d5db;
+      font-size:0.85rem;
+      outline:none;
+      transition:border 0.12s, box-shadow 0.12s, transform 0.08s;
+    }
+    textarea{min-height:70px;}
+
+    input:focus,select:focus,textarea:focus{
+      border-color:#b91c1c;
+      box-shadow:0 0 0 1px rgba(185,28,28,0.35);
+      transform:translateY(-1px);
+      background:white;
+    }
+
+    .btn-main{
+      background:#b91c1c;
+      color:white;
+      padding:10px 20px;
+      border:none;
+      border-radius:999px;
+      cursor:pointer;
+      font-size:0.9rem;
+      font-weight:600;
+      box-shadow:0 10px 24px rgba(185,28,28,0.45);
+      transition:transform 0.08s, box-shadow 0.12s;
+    }
+    .btn-main:active{
+      transform:translateY(1px);
+      box-shadow:0 6px 16px rgba(185,28,28,0.5);
+    }
+
+    .alert{
+      margin-top:10px;
+      padding:9px 10px;
+      border-radius:10px;
+      font-size:0.8rem;
+      display:none;
+    }
+    .alert-success{
+      background:#dcfce7;
+      color:#166534;
+    }
+    .alert-error{
+      background:#fee2e2;
+      color:#b91c1c;
+    }
+
+    /******** SLOTS ********/
+    .slots-box{
+      padding:6px;
+      border-radius:10px;
+      border:1px dashed #d1d5db;
+      background:#f9fafb;
+    }
+    .slots-help{
+      font-size:0.72rem;
+      color:#6b7280;
+      margin:0 0 4px;
+    }
+    .slots-wrap{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      min-height:34px;
+    }
+
+    .slot-pill{
+      padding:6px 12px;
+      border-radius:999px;
+      border:1px solid #d1d5db;
+      cursor:pointer;
+      background:#f1f5f9;
+      font-size:0.8rem;
+      transition:transform 0.08s, box-shadow 0.12s, background 0.12s;
+    }
+    .slot-pill:hover{
+      transform:translateY(-1px);
+      box-shadow:0 4px 10px rgba(15,23,42,0.18);
+    }
+    .slot-pill.selected{
+      background:#b91c1c;
+      border-color:#b91c1c;
+      color:white;
+      box-shadow:0 5px 14px rgba(185,28,28,0.55);
+    }
+    .slot-pill.booked{
+      background:#e5e7eb;
+      color:#9ca3af;
+      border-style:dashed;
+      cursor:not-allowed;
+      box-shadow:none;
+      transform:none;
+    }
+    .slot-pill.pending{
+      background:#fff7ed;
+      color:#b45309;
+      border-color:#fed7aa;
+      cursor:not-allowed;
+    }
+
+    /******** TABLES ********/
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:0.8rem;
+    }
+    th,td{
+      border-bottom:1px solid #e5e7eb;
+      padding:6px;
+      vertical-align:top;
+    }
+    th{
+      background:#f8fafc;
+      color:#374151;
+      font-size:0.75rem;
+      font-weight:600;
+    }
+    .empty-row{
+      text-align:center;
+      color:#9ca3af;
+      padding:10px 0;
+    }
+
+    .status-chip{
+      padding:3px 8px;
+      border-radius:999px;
+      font-size:0.75rem;
+      color:white;
+    }
+    .st-pending{background:#f59e0b;}
+    .st-approved{background:#16a34a;}
+    .st-rejected{background:#b91c1c;}
+    .st-block{background:#6b7280;}
+
+    .badge-urg-normal{
+      background:#eff6ff;
+      color:#1d4ed8;
+      padding:2px 8px;
+      border-radius:999px;
+      font-size:0.75rem;
+    }
+    .badge-urg-urgent{
+      background:#fee2e2;
+      color:#b91c1c;
+      padding:2px 8px;
+      border-radius:999px;
+      font-size:0.75rem;
+    }
+
+    /******** Director + EA profile ********/
+    .office-profile{
+      margin-top:4px;
+      margin-bottom:8px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .office-director-block{
+      padding:10px 8px 8px;
+      border-radius:12px;
+      background:#f9fafb;
+      border:1px solid #e5e7eb;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      text-align:center;
+    }
+
+    .office-avatar{
+      width:78px;
+      height:78px;
+      border-radius:50%;
+      object-fit:cover;
+      border:2px solid #b91c1c;
+      box-shadow:0 6px 14px rgba(15,23,42,0.25);
+      margin-bottom:6px;
+    }
+
+    .office-name-main{
+      font-weight:700;
+      font-size:0.9rem;
+      color:#111827;
+    }
+
+    .office-role{
+      font-size:0.78rem;
+      color:#4b5563;
+    }
+
+    .office-divider{
+      height:1px;
+      background:#e5e7eb;
+      margin:2px 0 4px;
+      width:100%;
+    }
+
+    .office-assistant-block{
+      padding:6px 8px;
+      border-radius:10px;
+      background:#f9fafb;
+      border:1px solid #e5e7eb;
+    }
+
+    .office-name-secondary{
+      font-weight:600;
+      font-size:0.82rem;
+      color:#374151;
+    }
+
+    /* Director dashboard cards & KPIs */
+    .director-kpi-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+      margin:8px 0 12px;
+    }
+    @media(max-width:900px){
+      .director-kpi-grid{
+        grid-template-columns:repeat(2,1fr);
+      }
+    }
+    .kpi-card{
+      background:#0f172a;
+      color:#f9fafb;
+      border-radius:14px;
+      padding:8px 10px;
+      box-shadow:0 8px 18px rgba(15,23,42,0.45);
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .kpi-label{
+      font-size:0.7rem;
+      text-transform:uppercase;
+      letter-spacing:0.05em;
+      color:#9ca3af;
+    }
+    .kpi-value{
+      font-size:1.1rem;
+      font-weight:700;
+    }
+    .kpi-sub{
+      font-size:0.7rem;
+      color:#e5e7eb;
+    }
+
+    .director-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    @media(max-width:900px){
+      .director-grid{
+        grid-template-columns:1fr;
+      }
+    }
+    .director-card{
+      background:#f9fafb;
+      border-radius:14px;
+      border:1px solid #e5e7eb;
+      padding:10px;
+      box-shadow:0 6px 16px rgba(15,23,42,0.08);
+    }
+    .director-card-title{
+      font-size:0.8rem;
+      font-weight:600;
+      color:#374151;
+      margin-bottom:4px;
+    }
+
   </style>
+
+  <!-- Charts + Excel libs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
+
 <body>
-  <div class="page">
-    <div class="header-card">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
-        <div style="display:flex;align-items:center;gap:12px">
-          <div class="header-logo-box"><img id="logoImg" src="https://dypbs.edu.in/assets/img/B-school-logo-ver-5.png" alt="logo"></div>
-          <div class="header-title-block">
-            <div class="header-institute">DR. D. Y. PATIL B-SCHOOL (DPGU)</div>
-            <h1 class="header-main-title">Director's Appointment Portal</h1>
-          </div>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header-card">
+    <div class="header-top">
+      <div class="header-logo-wrap">
+        <div class="header-logo-box">
+          <img src="https://dypbs.edu.in/assets/img/B-school-logo-ver-5.png" alt="DPU Logo" />
         </div>
 
-        <div style="display:flex;align-items:center;gap:8px">
-          <div class="role-switch">
-            <button class="role-pill active" data-role="visitor">Visitor</button>
-            <button class="role-pill" data-role="ea">EA</button>
-            <button class="role-pill" data-role="director">Director</button>
-          </div>
-          <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.06);padding:5px;border-radius:999px">
-            <input id="pinInput" class="pin-input" placeholder="PIN for EA/Director" style="border:none;padding:6px;border-radius:999px;background:transparent;color:#fff;outline:none" />
-            <button class="btn-small" id="pinApplyBtn">Apply</button>
-          </div>
+        <div class="header-title-block">
+          <div class="header-institute">DR. D. Y. PATIL B-SCHOOL (DPGU)</div>
+          <h1 class="header-main-title">Director's Appointment Portal</h1>
         </div>
       </div>
     </div>
 
-    <div class="layout">
-      <!-- LEFT -->
-      <section class="card">
-        <div class="card-title">
-          <h2>Director's Office</h2>
-          <div id="roleTag" style="background:#fee2e2;color:var(--accent);padding:4px 8px;border-radius:999px;font-weight:600">Visitor mode</div>
+    <div class="header-bottom">
+      <div class="role-area">
+        <div class="role-switch">
+          <button class="role-pill active" data-role="visitor">Visitor</button>
+          <button class="role-pill" data-role="ea">EA</button>
+          <button class="role-pill" data-role="director">Director</button>
         </div>
 
-        <div class="office-profile">
-          <div class="office-director-block">
-            <img id="directorPhoto" class="office-avatar" src="https://raw.githubusercontent.com/ganeshpathak-dpu/director-appointment-system/main/Sir.png" alt="Dr. Raja Roy Choudhury">
-            <div style="font-weight:700">Dr. Raja Roy Choudhury</div>
-            <div style="color:#4b5563;font-size:0.9rem">Director, Dr. D. Y. Patil B-School (DPGU)</div>
-            <div style="color:#4b5563;font-size:0.85rem">DPGU School of Business & Strategy and School of Liberal Arts</div>
-          </div>
-
-          <div class="office-divider"></div>
-
-          <div style="padding:8px;border-radius:10px;background:#fbfdff;border:1px solid #eef2f6">
-            <div style="font-weight:600">Ganesh Pathak</div>
-            <div style="color:#4b5563">Executive Assistant to Director, Director's Office</div>
-            <div style="color:#4b5563">Contact: 8421559109 · ganesh.pathak@dpu.edu.in</div>
-          </div>
+        <div class="pin-group">
+          <input type="password" id="pinInput" class="pin-input" placeholder="PIN for EA/Director" />
+          <button class="btn-small" id="pinApplyBtn">Apply</button>
         </div>
-
-        <p style="color:var(--muted);margin-top:10px;font-size:0.9rem">
-          Use the role switch above to view as Visitor, Executive Assistant (EA), or Director. EA and Director need PIN.
-        </p>
-
-        <!-- Director's dashboard -->
-        <div id="directorPanel" style="display:none;margin-top:12px">
-          <!-- NEW: summary stats -->
-          <div class="stats-grid" id="directorStats">
-            <div class="stat-card">
-              <div class="stat-label">Today Visits</div>
-              <div class="stat-value" id="statTodayVisits">0</div>
-              <div class="stat-sub">Approved</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-label">Today Pending</div>
-              <div class="stat-value" id="statTodayPending">0</div>
-              <div class="stat-sub">Awaiting decision</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-label">This Week</div>
-              <div class="stat-value" id="statWeekVisits">0</div>
-              <div class="stat-sub">Approved visitors</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-label">All Pending</div>
-              <div class="stat-value" id="statAllPending">0</div>
-              <div class="stat-sub">For EA / Director</div>
-            </div>
-          </div>
-
-          <!-- NEW: filter pills -->
-          <div class="filter-row">
-            <button type="button" class="filter-pill active" data-filter="today">Today</button>
-            <button type="button" class="filter-pill" data-filter="week">This Week</button>
-            <button type="button" class="filter-pill" data-filter="all">All Upcoming</button>
-          </div>
-
-          <h3 style="margin:6px 0">Visitors</h3>
-          <table>
-            <thead><tr><th>When</th><th>Visitor</th><th>Purpose</th></tr></thead>
-            <tbody id="directorBody"></tbody>
-          </table>
-        </div>
-
-        <!-- EA -->
-        <div id="eaPanel" style="display:none;margin-top:12px">
-          <h3 style="margin:6px 0">All Visits & Blocked Slots</h3>
-          <table>
-            <thead><tr><th>When</th><th>Visitor</th><th>Purpose</th><th>Urgency</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody id="eaBody"></tbody>
-          </table>
-
-          <h4 style="margin-top:12px">Block a Slot</h4>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:end">
-            <div><label>Date</label><input type="date" id="blockDate" /></div>
-            <div><label>Time</label><select id="blockTime"><option value="">Select</option></select></div>
-            <div style="flex:1"><label>Reason</label><input id="blockReason" placeholder="Reason"/></div>
-            <div><button class="btn-small" id="blockBtn">Block</button></div>
-          </div>
-          <div id="blockMsg" class="alert success">Slot blocked successfully.</div>
-        </div>
-      </section>
-
-      <!-- RIGHT (Visitor form) -->
-      <section class="card" id="visitorCard">
-        <div class="card-title">
-          <h2>Request Appointment</h2>
-          <div style="background:#fee2e2;color:var(--accent);padding:4px 8px;border-radius:999px;font-weight:600">Visitor form</div>
-        </div>
-
-        <form id="visitForm">
-          <div style="margin-bottom:10px">
-            <label>Select date for appointment *</label>
-            <input type="date" id="datePicker" required />
-          </div>
-
-          <div style="margin-bottom:10px"><label>Name *</label><input id="visitorName" required /></div>
-          <div style="margin-bottom:10px"><label>WhatsApp Number *</label><input id="visitorPhone" placeholder="+91XXXXXXXXXX" required /></div>
-          <div style="margin-bottom:10px"><label>Email *</label><input id="visitorEmail" required /></div>
-          <div style="margin-bottom:10px"><label>Department / Organisation *</label><input id="visitorDept" required /></div>
-          <div style="margin-bottom:10px">
-            <label>Urgency *</label>
-            <select id="urgency" required><option value="normal">Normal</option><option value="urgent">Urgent</option></select>
-          </div>
-
-          <div style="margin-bottom:10px">
-            <label>Available Slots *</label>
-            <div class="slots-box">
-              <p style="margin:0;color:var(--muted);font-size:0.9rem">
-                Slots depend on selected date. Grey = booked/blocked · Orange = under review · Red = your selection.
-              </p>
-              <div class="slots-wrap" id="slotContainer" style="margin-top:8px"></div>
-            </div>
-            <input type="hidden" id="selectedSlot" />
-          </div>
-
-          <div style="margin-bottom:10px"><label>Purpose *</label><textarea id="purpose" required></textarea></div>
-
-          <button class="btn-main" type="submit">Submit Request</button>
-
-          <div id="formOk" class="alert success">Request submitted. You’ll get confirmation on email & WhatsApp.</div>
-          <div id="formErr" class="alert error">Error submitting. Please check fields & try again.</div>
-        </form>
-      </section>
+      </div>
     </div>
   </div>
 
+  <!-- LAYOUT -->
+  <div class="layout">
+
+    <!-- LEFT PANEL -->
+    <section class="card">
+      <div class="card-title">
+        <h2>Director's Office</h2>
+        <span class="tag" id="roleTag">Visitor mode</span>
+      </div>
+
+      <div class="office-profile">
+        <div class="office-director-block">
+          <img
+            src="Sir.png"
+            alt="Dr. Raja Roy Choudhury"
+            class="office-avatar"
+          />
+          <div class="office-name-main">Dr. Raja Roy Choudhury</div>
+          <div class="office-role">Director, Dr. D. Y. Patil B-School (DPGU)</div>
+          <div class="office-role">DPGU School of Business &amp; Strategy and School of Liberal Arts</div>
+        </div>
+
+        <div class="office-divider"></div>
+
+        <div class="office-assistant-block">
+          <div class="office-name-secondary">Ganesh Pathak</div>
+          <div class="office-role">Executive Assistant to Director, Director's Office</div>
+          <div class="office-role">Contact: 8421559109 · ganesh.pathak@dpu.edu.in</div>
+        </div>
+      </div>
+
+      <p style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">
+        Use the role switch above to view as Visitor, Executive Assistant (EA), or Director.
+      </p>
+
+      <!-- Director view -->
+      <div id="directorPanel" style="display:none;margin-top:12px;">
+        <h3 style="margin:0 0 10px;font-size:1rem;color:#b91c1c;font-weight:700;">
+          Director Dashboard
+        </h3>
+
+        <!-- KPI Tiles -->
+        <div class="director-kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Total Requests</div>
+            <div class="kpi-value" id="kpiTotal">0</div>
+            <div class="kpi-sub">All time</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Approved</div>
+            <div class="kpi-value" id="kpiApproved">0</div>
+            <div class="kpi-sub">Confirmed visitors</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Pending</div>
+            <div class="kpi-value" id="kpiPending">0</div>
+            <div class="kpi-sub">Awaiting action</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Urgent</div>
+            <div class="kpi-value" id="kpiUrgent">0</div>
+            <div class="kpi-sub">Marked urgent</div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="director-grid">
+          <div class="director-card">
+            <div class="director-card-title">Status Overview</div>
+            <canvas id="statusChart"></canvas>
+          </div>
+          <div class="director-card">
+            <div class="director-card-title">Appointments Trend</div>
+            <canvas id="volumeChart"></canvas>
+          </div>
+          <div class="director-card">
+            <div class="director-card-title">Requests by Department</div>
+            <canvas id="deptChart"></canvas>
+          </div>
+          <div class="director-card">
+            <div class="director-card-title">Urgency Breakdown</div>
+            <canvas id="urgencyChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Export button -->
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin:6px 0 4px;">
+          <button class="btn-small" type="button" onclick="exportToExcel()">
+            Export to Excel
+          </button>
+        </div>
+
+        <h3 style="margin:6px 0;font-size:0.9rem;">Upcoming Approved Visitors</h3>
+        <table>
+          <thead>
+            <tr><th>When</th><th>Visitor</th><th>Purpose</th></tr>
+          </thead>
+          <tbody id="directorBody"></tbody>
+        </table>
+      </div>
+
+      <!-- EA view -->
+      <div id="eaPanel" style="display:none;margin-top:8px;">
+        <h3 style="margin:6px 0;font-size:0.9rem;">All Visits &amp; Blocked Slots</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>When</th>
+              <th>Visitor</th>
+              <th>Purpose</th>
+              <th>Urgency</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="eaBody"></tbody>
+        </table>
+
+        <h3 style="margin-top:14px;font-size:0.9rem;">Block a Slot</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;">
+          <div>
+            <label>Date</label>
+            <input type="date" id="blockDate" />
+          </div>
+          <div>
+            <label>Time</label>
+            <select id="blockTime"><option value="">Select</option></select>
+          </div>
+          <div style="flex:1;">
+            <label>Reason</label>
+            <input type="text" id="blockReason" placeholder="Personal / Travel / Meeting" />
+          </div>
+          <button class="btn-small" id="blockBtn">Block</button>
+        </div>
+        <div id="blockMsg" class="alert alert-success">Slot blocked successfully.</div>
+      </div>
+    </section>
+
+    <!-- RIGHT: VISITOR FORM -->
+    <section class="card">
+      <div class="card-title">
+        <h2>Request Appointment</h2>
+        <span class="tag">Visitor form</span>
+      </div>
+
+      <form id="visitForm">
+        <div class="field">
+          <label>Select date for appointment *</label>
+          <input type="date" id="datePicker" required />
+        </div>
+
+        <div class="field">
+          <label>Name *</label>
+          <input id="visitorName" required />
+        </div>
+        <div class="field">
+          <label>WhatsApp Number *</label>
+          <input id="visitorPhone" placeholder="+91XXXXXXXXXX" required />
+        </div>
+        <div class="field">
+          <label>Email *</label>
+          <input id="visitorEmail" required />
+        </div>
+        <div class="field">
+          <label>Department / Organisation *</label>
+          <input id="visitorDept" required />
+        </div>
+        <div class="field">
+          <label>Urgency *</label>
+          <select id="urgency" required>
+            <option value="normal">Normal</option>
+            <option value="urgent">Urgent</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Available Slots *</label>
+          <div class="slots-box">
+            <p class="slots-help">
+              Slots depend on the selected date. Grey = booked/blocked · Orange = under review · Red = your selection.
+            </p>
+            <div class="slots-wrap" id="slotContainer"></div>
+          </div>
+          <input type="hidden" id="selectedSlot" />
+        </div>
+
+        <div class="field">
+          <label>Purpose *</label>
+          <textarea id="purpose" required></textarea>
+        </div>
+
+        <button class="btn-main" type="submit">Submit Request</button>
+
+        <div class="alert alert-success" id="formOk">
+          Request submitted. You’ll get confirmation on email & WhatsApp.
+        </div>
+        <div class="alert alert-error" id="formErr">
+          Error submitting. Please check fields &amp; try again.
+        </div>
+      </form>
+    </section>
+
+  </div>
+</div>
+
 <script>
-/* IMPORTANT: this is your NEW working Apps Script URL */
-const API_URL = "https://script.google.com/macros/s/AKfycbwQrQulu-JQ35XtoWx8Q7EkP0LYhBI_MDixWC0Ec0UuQrfF7dM1GWLthgoOQe9JYDZw/exec";
-const ROLE_PINS = { ea: "1111", director: "2222" };
-const SLOT_LIST = ["10:00","10:30","11:00","11:30","12:00","12:30","13:00"];
+  const API_URL = "https://script.google.com/macros/s/AKfycbzTVnRaR6QSXlW2IFVKnOJL0bcp0CSo6XMt7zZjtua1LpjQj2pY6ILdL3oULP0K3JL8/exec";
 
-let allItems = [];
-let currentDateKey = "";
-let directorFilter = "today"; // "today" | "week" | "all"
+  const ROLE_PINS = { ea: "1111", director: "2222" };
+  const SLOT_LIST = ["10:00","10:30","11:00","11:30","12:00","12:30","13:00"];
 
-/* ----- Date helpers (keep as-is; already tested) ----- */
-function excelSerialToDate(serial){
-  const days = Math.floor(Number(serial));
-  const fraction = Number(serial) - days;
-  const base = Date.UTC(1899,11,30,0,0,0);
-  const ms = days * 24 * 3600 * 1000 + Math.round(fraction * 24 * 3600 * 1000);
-  return new Date(base + ms);
-}
+  let currentRole="visitor";
+  let allItems=[];
+  let currentDateKey="";
+  let statusChart=null, volumeChart=null, deptChart=null, urgencyChart=null;
 
-function parseMaybeDate(input){
-  if(input === null || input === undefined || input === "") return null;
-  if(input instanceof Date) return input;
-
-  if(typeof input === "number" || /^\d+(\.\d+)?$/.test(String(input))){
-    const n = Number(input);
-    if(n > 1e12){
-      return new Date(n);
-    }
-    if(n > 36500 && n < 200000){
-      return excelSerialToDate(n);
-    }
-    const d2 = new Date(n);
-    if(!isNaN(d2)) return d2;
-    return excelSerialToDate(n);
+  // format date string "YYYY-MM-DD" => "03 December 2025"
+  function formatDate(dateStr) {
+    if(!dateStr) return "";
+    const parts = dateStr.split("-");
+    if(parts.length !== 3) return dateStr;
+    const y = Number(parts[0]), m = Number(parts[1])-1, d = Number(parts[2]);
+    const dt = new Date(y, m, d, 0, 0, 0);
+    return dt.toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' });
   }
 
-  if(typeof input === "string"){
-    if(/\d{4}-\d{2}-\d{2}T/.test(input) || /Z$/.test(input) || /\+\d{2}:\d{2}$/.test(input)){
-      const d = new Date(input);
-      if(!isNaN(d)) return d;
-    }
-    if(/^\d{4}-\d{2}-\d{2}$/.test(input)){
-      const d = new Date(input + "T00:00:00");
-      if(!isNaN(d)) return d;
-    }
-    if(/^\d{1,2}:\d{2}(:\d{2})?$/.test(input)){
-      const parts = input.split(":").map(Number);
-      const now = new Date();
-      now.setHours(parts[0]||0, parts[1]||0, parts[2]||0, 0);
-      return now;
-    }
-    const df = new Date(input);
-    if(!isNaN(df)) return df;
+  // format time "HH:MM" => "1:00 PM"
+  function formatTime(timeStr) {
+    if(!timeStr) return "";
+    const parts = timeStr.split(":");
+    if(parts.length < 2) return timeStr;
+    const hh = Number(parts[0]), mm = Number(parts[1]);
+    const now = new Date();
+    now.setHours(hh, mm, 0, 0);
+    return now.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true });
   }
-  return null;
-}
 
-function formatDateTimeFlexible(dateStr, timeStr){
-  try{
-    let dateObj = parseMaybeDate(dateStr);
-    let timeObj = parseMaybeDate(timeStr);
+  // For table display: "YYYY-MM-DD" + "HH:MM" => "03-12-2025 · 1:00 PM"
+  function formatDateTime(dateStr, timeStr) {
+    try {
+      const dParts = dateStr.split("-");
+      const dd = dParts[2] || "";
+      const mm = dParts[1] || "";
+      const yy = dParts[0] || "";
+      const dateDisplay = `${dd}-${mm}-${yy}`;
+      const timeDisplay = formatTime(timeStr);
+      return `${dateDisplay} · ${timeDisplay}`;
+    } catch (e) {
+      return (dateStr || "") + " " + (timeStr || "");
+    }
+  }
 
-    if(dateObj && dateObj.getFullYear && dateObj.getFullYear() <= 1900){
-      if(timeObj && timeObj.getFullYear && timeObj.getFullYear() > 1900){
-        dateObj = timeObj;
-        timeObj = null;
+  async function callApi(params){
+    try{
+      const body=new URLSearchParams(params);
+      const res=await fetch(API_URL,{
+        method:"POST",
+        headers:{"Content-Type":"application/x-www-form-urlencoded"},
+        body
+      });
+      const data=await res.json();
+      return data;
+    }catch(e){
+      console.error("callApi network error",e);
+      return {success:false,error:"Network error: "+e.message};
+    }
+  }
+
+  async function loadAll(){
+    const res=await callApi({action:"listAll"});
+    if(res && res.success && Array.isArray(res.data)){
+      allItems=res.data;
+    }else{
+      allItems=[];
+      if(res && res.error){
+        console.warn("listAll error from server:",res.error);
       }
     }
-
-    if(!dateObj && timeObj && timeObj.getFullYear && timeObj.getFullYear() > 1900){
-      dateObj = timeObj;
-      timeObj = null;
-    }
-
-    if(!dateObj) dateObj = new Date();
-
-    if(typeof timeStr === "string" && /^\d{1,2}:\d{2}/.test(timeStr)){
-      const [hh, mm] = timeStr.split(":").map(Number);
-      if(!Number.isNaN(hh)) dateObj.setHours(hh);
-      if(!Number.isNaN(mm)) dateObj.setMinutes(mm);
-      dateObj.setSeconds(0); dateObj.setMilliseconds(0);
-    } else if(timeObj){
-      dateObj.setHours(timeObj.getHours(), timeObj.getMinutes(), timeObj.getSeconds(), 0);
-    }
-
-    const day = String(dateObj.getDate()).padStart(2,"0");
-    const month = String(dateObj.getMonth()+1).padStart(2,"0");
-    const year = dateObj.getFullYear();
-
-    let hour = dateObj.getHours();
-    const minute = String(dateObj.getMinutes()).padStart(2,"0");
-    const ampm = hour >= 12 ? "PM" : "AM";
-    hour = hour % 12;
-    if(hour === 0) hour = 12;
-
-    return `${day}-${month}-${year} · ${hour}:${minute} ${ampm}`;
-  }catch(e){
-    return (dateStr ? String(dateStr) : "") + " " + (timeStr ? String(timeStr) : "");
+    renderSlots();
+    renderEAList();
+    renderDirectorList();
   }
-}
 
-/* ----- API + core UI ----- */
-async function callApi(params){
-  try{
-    const body = new URLSearchParams(params);
-    const r = await fetch(API_URL, { method: "POST", headers: {"Content-Type":"application/x-www-form-urlencoded"}, body });
-    const json = await r.json();
-    return json;
-  }catch(e){
-    console.error("Network error", e);
-    return { success:false, error: "Network error: " + e.message };
+  function setTodayDate(){
+    const dp=document.getElementById("datePicker");
+    if(!dp) return;
+    const d=new Date();
+    const y=d.getFullYear();
+    const m=String(d.getMonth()+1).padStart(2,'0');
+    const dd=String(d.getDate()).padStart(2,'0');
+    currentDateKey=`${y}-${m}-${dd}`;
+    dp.value=currentDateKey;
   }
-}
 
-async function loadAll(){
-  const res = await callApi({ action: "listAll" });
-  if(res && res.success && Array.isArray(res.data)) allItems = res.data;
-  else { allItems = []; if(res && res.error) console.warn("listAll error:", res.error); }
+  function getItemsForDate(dateKey){
+    return allItems.filter(it=>it.date===dateKey);
+  }
 
-  renderSlots();
-  renderEAList();
-  renderDirectorStats();
-  renderDirectorList();
-}
+  function renderSlots(){
+    const cont=document.getElementById("slotContainer");
+    const selected=document.getElementById("selectedSlot");
+    if(!cont || !selected) return;
 
-function setTodayDate(){
-  const dp = document.getElementById("datePicker");
-  if(!dp) return;
-  const d = new Date();
-  const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,"0"), dd = String(d.getDate()).padStart(2,"0");
-  currentDateKey = `${y}-${m}-${dd}`;
-  dp.value = currentDateKey;
-}
+    cont.innerHTML="";
+    selected.value="";
 
-function getItemsForDate(dateKey){
-  return allItems.filter(i => String(i.date) === String(dateKey));
-}
-
-function renderSlots(){
-  const cont = document.getElementById("slotContainer");
-  const sel = document.getElementById("selectedSlot");
-  if(!cont || !sel) return;
-  cont.innerHTML = "";
-  sel.value = "";
-
-  const itemsForDay = currentDateKey ? getItemsForDate(currentDateKey) : [];
-  const map = {};
-  itemsForDay.forEach(it => { if(!map[it.time]) map[it.time]=[]; map[it.time].push(it); });
-
-  SLOT_LIST.forEach(time => {
-    const b = document.createElement("button");
-    b.type = "button";
-    b.textContent = time;
-    b.className = "slot-pill";
-    const items = map[time] || [];
-    const blocked = items.some(i=>i.recordType==="block");
-    const approved = items.some(i=>i.recordType==="visit" && i.status==="approved");
-    const pending = items.some(i=>i.recordType==="visit" && i.status==="pending");
-
-    if(blocked || approved) b.classList.add("booked");
-    else if(pending) b.classList.add("pending");
-    else b.addEventListener("click", ()=>{
-      sel.value = time;
-      Array.from(cont.children).forEach(x=>x.classList.remove("selected"));
-      b.classList.add("selected");
+    const itemsForDay = currentDateKey ? getItemsForDate(currentDateKey) : [];
+    const map={};
+    itemsForDay.forEach(it=>{
+      if(!map[it.time]) map[it.time]=[];
+      map[it.time].push(it);
     });
 
-    cont.appendChild(b);
-  });
-}
+    SLOT_LIST.forEach(time=>{
+      const btn=document.createElement("button");
+      btn.type="button";
+      btn.textContent=time;
+      btn.className="slot-pill";
 
-/* ----- Role handling (Director sees only dashboard) ----- */
-function setRole(role){
-  document.querySelectorAll(".role-pill").forEach(p => p.classList.toggle("active", p.dataset.role===role));
-  document.getElementById("roleTag").textContent =
-    role==="visitor" ? "Visitor mode" :
-    role==="ea" ? "Executive Assistant mode" : "Director mode";
+      const items=map[time]||[];
+      const blocked=items.some(i=>i.recordType==="block");
+      const approved=items.some(i=>i.recordType==="visit" && i.status==="approved");
+      const pending=items.some(i=>i.recordType==="visit" && i.status==="pending");
 
-  document.getElementById("eaPanel").style.display = role==="ea" ? "block" : "none";
-  document.getElementById("directorPanel").style.display = role==="director" ? "block" : "none";
+      if(blocked || approved){
+        btn.classList.add("booked");
+      } else if(pending){
+        btn.classList.add("pending");
+      } else {
+        btn.onclick=()=>{
+          selected.value=time;
+          Array.from(cont.children).forEach(x=>x.classList.remove("selected"));
+          btn.classList.add("selected");
+        };
+      }
 
-  const visitorCard = document.getElementById("visitorCard");
-  if(visitorCard){
-    visitorCard.style.display = (role === "director") ? "none" : "block";
+      cont.appendChild(btn);
+    });
   }
-}
 
-function setupRoleControls(){
-  document.querySelectorAll(".role-pill").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const role = btn.dataset.role;
-      if(role === "visitor"){ setRole("visitor"); return; }
-      const pin = document.getElementById("pinInput").value.trim();
-      if(role==="ea" && pin===ROLE_PINS.ea) setRole("ea");
-      else if(role==="director" && pin===ROLE_PINS.director) setRole("director");
+  function setRole(role){
+    currentRole=role;
+    document.querySelectorAll(".role-pill").forEach(b=>{
+      b.classList.toggle("active", b.dataset.role===role);
+    });
+
+    document.getElementById("roleTag").textContent =
+      role==="visitor" ? "Visitor mode" :
+      role==="ea" ? "Executive Assistant mode" : "Director mode";
+
+    document.getElementById("eaPanel").style.display =
+      role==="ea" ? "block" : "none";
+
+    document.getElementById("directorPanel").style.display =
+      role==="director" ? "block" : "none";
+
+    renderEAList();
+    renderDirectorList();
+  }
+
+  function setupRoleControls(){
+    document.querySelectorAll(".role-pill").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const role=btn.dataset.role;
+        if(role==="visitor"){ setRole("visitor"); return; }
+
+        const pin=document.getElementById("pinInput").value.trim();
+        if(role==="ea" && pin===ROLE_PINS.ea) setRole("ea");
+        else if(role==="director" && pin===ROLE_PINS.director) setRole("director");
+        else alert("Incorrect PIN");
+      });
+    });
+
+    document.getElementById("pinApplyBtn").onclick=()=>{
+      const pin=document.getElementById("pinInput").value.trim();
+      if(pin===ROLE_PINS.ea) setRole("ea");
+      else if(pin===ROLE_PINS.director) setRole("director");
       else alert("Incorrect PIN");
-    });
-  });
-  document.getElementById("pinApplyBtn").addEventListener("click", ()=>{
-    const pin = document.getElementById("pinInput").value.trim();
-    if(pin===ROLE_PINS.ea) setRole("ea");
-    else if(pin===ROLE_PINS.director) setRole("director");
-    else alert("Incorrect PIN");
-  });
-}
-
-/* ----- Visitor form ----- */
-function setupVisitorForm(){
-  const form = document.getElementById("visitForm");
-  const ok = document.getElementById("formOk");
-  const err = document.getElementById("formErr");
-  if(!form) return;
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    ok.style.display = "none"; err.style.display = "none";
-
-    const dateVal = document.getElementById("datePicker").value;
-    const name = document.getElementById("visitorName").value.trim();
-    const phone = document.getElementById("visitorPhone").value.trim();
-    const email = document.getElementById("visitorEmail").value.trim();
-    const dept = document.getElementById("visitorDept").value.trim();
-    const urg = document.getElementById("urgency").value;
-    const purpose = document.getElementById("purpose").value.trim();
-    const time = document.getElementById("selectedSlot").value;
-
-    if(!dateVal||!name||!phone||!email||!dept||!urg||!purpose){
-      err.textContent = "Please fill all required fields."; err.style.display = "block"; return;
-    }
-    if(!time){
-      err.textContent = "Please select an available time slot."; err.style.display = "block"; return;
-    }
-
-    currentDateKey = dateVal;
-
-    const displayDateTime = formatDateTimeFlexible(dateVal, time);
-    const parts = displayDateTime.split(" · ");
-    const displayDate = parts[0] || "";
-    const displayTime = parts[1] || "";
-
-    const res = await callApi({
-      action:"addVisit",
-      name,
-      phone,
-      email,
-      dept,
-      urgency:urg,
-      purpose,
-      date:currentDateKey,
-      time,
-      displayDate,
-      displayTime,
-      displayDateTime
-    });
-
-    if(res && res.success){
-      ok.style.display = "block";
-      form.reset();
-      document.getElementById("selectedSlot").value = "";
-      await loadAll();
-      document.getElementById("datePicker").value = dateVal;
-      currentDateKey = dateVal;
-      renderSlots();
-    } else {
-      console.error("addVisit error", res);
-      err.textContent = "Server error: " + ((res && res.error) ? res.error : "Unknown error");
-      err.style.display = "block";
-    }
-  });
-}
-
-/* ----- EA list / actions ----- */
-function renderEAList(){
-  const body = document.getElementById("eaBody");
-  if(!body) return;
-  body.innerHTML = "";
-  if(!allItems.length){
-    body.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#9ca3af;padding:10px">No records.</td></tr>`;
-    return;
-  }
-  allItems.forEach(it=>{
-    const tr = document.createElement("tr");
-    const td1 = document.createElement("td"); td1.textContent = formatDateTimeFlexible(it.date, it.time);
-    const td2 = document.createElement("td");
-    if(it.recordType==="block"){
-      td2.innerHTML = "<strong>Blocked</strong><br><span style='color:#666'>Director not available</span>";
-    } else {
-      td2.innerHTML = `<strong>${it.name}</strong><br>${it.department || ""}<br><span style="color:#999">${it.phone || ""}</span>`;
-    }
-    const td3 = document.createElement("td"); td3.textContent = it.purpose || "";
-    const td4 = document.createElement("td");
-    td4.innerHTML = it.recordType==="block"
-      ? "-"
-      : `<span style="background:${it.urgency==="urgent"?"#fee2e2":"#eff6ff"};padding:4px;border-radius:8px">${it.urgency||""}</span>`;
-    const td5 = document.createElement("td");
-    const st = document.createElement("span");
-    st.style.padding = "4px 8px"; st.style.borderRadius="999px"; st.style.color="#fff";
-    if(it.recordType==="block"){ st.style.background="#6b7280"; st.textContent = "Blocked"; }
-    else if(it.status==="pending"){ st.style.background="#f59e0b"; st.textContent="Pending"; }
-    else if(it.status==="approved"){ st.style.background="#16a34a"; st.textContent="Approved"; }
-    else { st.style.background="#b91c1c"; st.textContent = it.status ? it.status.charAt(0).toUpperCase()+it.status.slice(1) : "Unknown"; }
-    td5.appendChild(st);
-
-    const td6 = document.createElement("td");
-    if(it.recordType==="visit" && it.status==="pending"){
-      td6.innerHTML = `<button class="btn-small" style="background:#16a34a;color:#fff;margin-right:6px" onclick="updateStatus('${it.id}','approved')">Approve</button>
-                       <button class="btn-small" style="background:#b91c1c;color:#fff" onclick="updateStatus('${it.id}','rejected')">Reject</button>`;
-    } else if(it.recordType==="visit" && it.status==="approved"){
-      td6.innerHTML = `<button class="btn-small" style="background:#25D366;color:#fff" onclick="sendWhatsApp('${it.phone}','${it.name}','${it.date}','${it.time}')">WhatsApp</button>`;
-    } else td6.innerHTML = "<span style='color:#999'>-</span>";
-
-    tr.append(td1,td2,td3,td4,td5,td6);
-    body.appendChild(tr);
-  });
-}
-
-async function updateStatus(id,status){
-  const res = await callApi({ action:"updateStatus", id, status });
-  if(res && res.success){ await loadAll(); alert("Updated"); }
-  else { alert("Failed: " + ((res && res.error) ? res.error : "Unknown")); }
-}
-
-function sendWhatsApp(phone,name,date,time){
-  const clean = (phone||"").replace(/\D/g,'');
-  const msg = `Dear ${name}, your appointment with the Director is confirmed on ${formatDateTimeFlexible(date,time)}.`;
-  const url = `https://wa.me/${clean}?text=${encodeURIComponent(msg)}`;
-  window.open(url, "_blank");
-}
-
-/* ----- Director stats + list ----- */
-function computeDirectorStats(){
-  const today = new Date();
-  const todayKey = today.toISOString().slice(0,10);
-
-  const weekEnd = new Date(today);
-  weekEnd.setDate(weekEnd.getDate()+6);
-  const weekEndKey = weekEnd.toISOString().slice(0,10);
-
-  let todayApproved = 0;
-  let todayPending = 0;
-  let weekApproved = 0;
-  let allPending = 0;
-
-  allItems.forEach(it=>{
-    if(it.recordType !== "visit") return;
-    const dKey = String(it.date).slice(0,10);
-    if(it.status === "pending") allPending++;
-
-    if(dKey === todayKey){
-      if(it.status === "approved") todayApproved++;
-      if(it.status === "pending") todayPending++;
-    }
-
-    if(dKey >= todayKey && dKey <= weekEndKey && it.status === "approved"){
-      weekApproved++;
-    }
-  });
-
-  return {todayApproved,todayPending,weekApproved,allPending};
-}
-
-function renderDirectorStats(){
-  const s = computeDirectorStats();
-  const elToday = document.getElementById("statTodayVisits");
-  if(!elToday) return; // panel not rendered yet
-
-  document.getElementById("statTodayVisits").textContent = s.todayApproved;
-  document.getElementById("statTodayPending").textContent = s.todayPending;
-  document.getElementById("statWeekVisits").textContent = s.weekApproved;
-  document.getElementById("statAllPending").textContent = s.allPending;
-}
-
-function renderDirectorList(){
-  const body = document.getElementById("directorBody");
-  if(!body) return;
-  body.innerHTML = "";
-
-  const today = new Date();
-  const todayKey = today.toISOString().slice(0,10);
-  const weekEnd = new Date(today);
-  weekEnd.setDate(weekEnd.getDate()+6);
-  const weekEndKey = weekEnd.toISOString().slice(0,10);
-
-  let list = allItems.filter(it => it.recordType === "visit" && it.status === "approved");
-
-  // apply filter
-  list = list.filter(it=>{
-    const dKey = String(it.date).slice(0,10);
-    if(directorFilter === "today") return dKey === todayKey;
-    if(directorFilter === "week")  return dKey >= todayKey && dKey <= weekEndKey;
-    // "all" = upcoming from today onwards
-    return dKey >= todayKey;
-  });
-
-  list.sort((a,b)=>(String(a.date)+a.time).localeCompare(String(b.date)+b.time));
-
-  if(!list.length){
-    body.innerHTML = `<tr><td colspan="3" style="text-align:center;color:#9ca3af;padding:10px">No visitors in this view.</td></tr>`;
-    return;
+    };
   }
 
-  list.forEach(it=>{
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${formatDateTimeFlexible(it.date,it.time)}</td>
-                    <td><strong>${it.name}</strong><br>${it.department || ""}<br><span style="color:#999">${it.urgency||""}</span></td>
-                    <td>${it.purpose || ""}</td>`;
-    body.appendChild(tr);
-  });
-}
+  function setupVisitorForm(){
+    const form=document.getElementById("visitForm");
+    const ok=document.getElementById("formOk");
+    const err=document.getElementById("formErr");
+    if(!form) return;
 
-function setupDirectorFilterControls(){
-  const pills = document.querySelectorAll(".filter-pill");
-  pills.forEach(p=>{
-    p.addEventListener("click", ()=>{
-      directorFilter = p.dataset.filter;
-      pills.forEach(x=>x.classList.toggle("active", x===p));
-      renderDirectorList();
+    form.addEventListener("submit", async ev=>{
+      ev.preventDefault();
+      ok.style.display="none";
+      err.style.display="none";
+      err.textContent="Error submitting. Please check fields & try again.";
+
+      const dateVal=document.getElementById("datePicker").value;
+      const name=document.getElementById("visitorName").value.trim();
+      const phone=document.getElementById("visitorPhone").value.trim();
+      const email=document.getElementById("visitorEmail").value.trim();
+      const dept=document.getElementById("visitorDept").value.trim();
+      const urg=document.getElementById("urgency").value;
+      const purpose=document.getElementById("purpose").value.trim();
+      const time=document.getElementById("selectedSlot").value;
+
+      if(!dateVal||!name||!phone||!email||!dept||!urg||!purpose){
+        err.textContent="Please fill all required fields.";
+        err.style.display="block";
+        return;
+      }
+      if(!time){
+        err.textContent="Please select an available time slot.";
+        err.style.display="block";
+        return;
+      }
+
+      currentDateKey=dateVal;
+
+      const formattedDate = formatDate(dateVal);
+      const formattedTime = formatTime(time);
+
+      const res=await callApi({
+        action:"addVisit",
+        name,
+        phone,
+        email,
+        dept,
+        urgency:urg,
+        purpose,
+        date:currentDateKey,
+        time,
+        formattedDate,
+        formattedTime
+      });
+
+      if(res && res.success){
+        ok.style.display="block";
+        form.reset();
+        document.getElementById("selectedSlot").value="";
+        await loadAll();
+        document.getElementById("datePicker").value=dateVal;
+        currentDateKey=dateVal;
+        renderSlots();
+      } else {
+        console.error("addVisit error",res);
+        err.textContent = "Server error: " + ((res && res.error) ? res.error : "Unknown error");
+        err.style.display="block";
+      }
     });
-  });
-}
+  }
 
-/* ----- Block slots ----- */
-function setupBlockControls(){
-  SLOT_LIST.forEach(t => {
-    const o = document.createElement("option");
-    o.value = o.textContent = t;
-    document.getElementById("blockTime").appendChild(o);
-  });
-  document.getElementById("blockBtn").addEventListener("click", async ()=>{
-    const date = document.getElementById("blockDate").value || currentDateKey;
-    const time = document.getElementById("blockTime").value;
-    const reason = document.getElementById("blockReason").value || "Not available";
-    if(!date||!time){ alert("Select date & time"); return; }
-    const res = await callApi({ action:"blockSlot", date, time, reason });
+  function renderEAList(){
+    const body=document.getElementById("eaBody");
+    if(!body || currentRole!=="ea") return;
+    body.innerHTML="";
+
+    if(!allItems.length){
+      body.innerHTML=`<tr><td colspan="6" class="empty-row">No records.</td></tr>`;
+      return;
+    }
+
+    allItems.forEach(it=>{
+      const tr=document.createElement("tr");
+
+      const td1=document.createElement("td");
+      td1.textContent = formatDateTime(it.date, it.time);
+
+      const td2=document.createElement("td");
+      if(it.recordType==="block"){
+        td2.innerHTML="<strong>Blocked</strong><br><span style='color:#666'>Director not available</span>";
+      } else {
+        td2.innerHTML=`<strong>${it.name}</strong><br>${it.department}<br><span style="color:#999">${it.phone}</span>`;
+      }
+
+      const td3=document.createElement("td");
+      td3.textContent=it.purpose;
+
+      const td4=document.createElement("td");
+      td4.innerHTML = it.recordType==="block"
+        ? "-"
+        : `<span class="${it.urgency==="urgent"?"badge-urg-urgent":"badge-urg-normal"}">${it.urgency}</span>`;
+
+      const td5=document.createElement("td");
+      const st=document.createElement("span");
+      st.className="status-chip " +
+        (it.recordType==="block"?"st-block":
+         it.status==="pending"?"st-pending":
+         it.status==="approved"?"st-approved":"st-rejected");
+      st.textContent= it.recordType==="block"
+        ? "Blocked"
+        : it.status.charAt(0).toUpperCase()+it.status.slice(1);
+      td5.appendChild(st);
+
+      const td6=document.createElement("td");
+      if(it.recordType==="visit" && it.status==="pending"){
+        td6.innerHTML = `
+          <button class="btn-small" style="background:#16a34a;color:white;margin-right:4px;"
+            onclick="updateStatus('${it.id}','approved')">Approve</button>
+          <button class="btn-small" style="background:#b91c1c;color:white;"
+            onclick="updateStatus('${it.id}','rejected')">Reject</button>`;
+      }
+      else if(it.recordType==="visit" && it.status==="approved"){
+        td6.innerHTML = `<button class="btn-small" style="background:#25D366;color:white;"
+          onclick="sendWhatsApp('${it.phone}','${it.name}','${it.date}','${it.time}')">WhatsApp</button>`;
+      }
+      else{
+        td6.innerHTML="<span style='color:#999;'>-</span>";
+      }
+
+      tr.append(td1,td2,td3,td4,td5,td6);
+      body.appendChild(tr);
+    });
+  }
+
+  async function updateStatus(id,status){
+    const res=await callApi({action:"updateStatus",id,status});
     if(res && res.success){
-      document.getElementById("blockMsg").style.display = "block";
       await loadAll();
-    } else alert("Failed: " + ((res && res.error) ? res.error : "Unknown"));
+      alert("Updated.");
+    } else {
+      console.error("updateStatus error",res);
+      alert("Failed to update: " + (res && res.error ? res.error : "Unknown error"));
+    }
+  }
+
+  function sendWhatsApp(phone,name,date,time){
+    const clean=(phone||"").replace(/\D/g,'');
+    const fDate = formatDate(date);
+    const fTime = formatTime(time);
+    const msg=`Dear ${name}, your appointment with the Director is confirmed on ${fDate} at ${fTime}. Please report 10 minutes before your scheduled time.`;
+    const url=`https://wa.me/${clean}?text=${encodeURIComponent(msg)}`;
+    window.open(url,"_blank");
+  }
+
+  function renderDirectorChartsAndKpis(){
+    const visits = allItems.filter(i => i.recordType === "visit");
+
+    const total = visits.length;
+    const approved = visits.filter(i => i.status === "approved").length;
+    const pending = visits.filter(i => i.status === "pending").length;
+    const rejected = visits.filter(i => i.status === "rejected").length;
+    const urgent = visits.filter(i => i.urgency === "urgent").length;
+    const normal = visits.filter(i => i.urgency === "normal").length;
+
+    const elTotal = document.getElementById("kpiTotal");
+    const elApproved = document.getElementById("kpiApproved");
+    const elPending = document.getElementById("kpiPending");
+    const elUrgent = document.getElementById("kpiUrgent");
+    if(elTotal) elTotal.textContent = total;
+    if(elApproved) elApproved.textContent = approved;
+    if(elPending) elPending.textContent = pending;
+    if(elUrgent) elUrgent.textContent = urgent;
+
+    const statusCanvas = document.getElementById("statusChart");
+    const volumeCanvas = document.getElementById("volumeChart");
+    const deptCanvas = document.getElementById("deptChart");
+    const urgCanvas = document.getElementById("urgencyChart");
+    if(!statusCanvas || !volumeCanvas || !deptCanvas || !urgCanvas) return;
+
+    if(statusChart) statusChart.destroy();
+    if(volumeChart) volumeChart.destroy();
+    if(deptChart) deptChart.destroy();
+    if(urgencyChart) urgencyChart.destroy();
+
+    const statusData = {
+      approved,
+      pending,
+      rejected
+    };
+
+    statusChart = new Chart(statusCanvas, {
+      type: 'doughnut',
+      data: {
+        labels: ["Approved", "Pending", "Rejected"],
+        datasets: [{
+          data: [statusData.approved, statusData.pending, statusData.rejected],
+          backgroundColor: ["#16a34a", "#f59e0b", "#b91c1c"],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { font: { size: 10 } }
+          }
+        },
+        cutout: "55%"
+      }
+    });
+
+    const dateCount = {};
+    visits.forEach(v => {
+      if(!v.date) return;
+      dateCount[v.date] = (dateCount[v.date] || 0) + 1;
+    });
+    const sortedDates = Object.keys(dateCount).sort();
+    const labels = sortedDates.map(d => {
+      const parts = d.split("-");
+      return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    });
+    const values = sortedDates.map(d => dateCount[d]);
+
+    volumeChart = new Chart(volumeCanvas, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: "Appointments",
+          data: values,
+          fill: true,
+          tension: 0.3,
+          borderColor: "#b91c1c",
+          backgroundColor: "rgba(185,28,28,0.12)",
+          pointRadius: 2
+        }]
+      },
+      options: {
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: {
+            ticks: { font: { size: 9 } },
+            grid: { display: false }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: { stepSize: 1, font: { size: 9 } }
+          }
+        }
+      }
+    });
+
+    const deptCounts = {};
+    visits.forEach(v => {
+      const k = v.department || "Unknown";
+      deptCounts[k] = (deptCounts[k] || 0) + 1;
+    });
+    const deptLabels = Object.keys(deptCounts);
+    const deptValues = Object.values(deptCounts);
+
+    deptChart = new Chart(deptCanvas, {
+      type: 'bar',
+      data: {
+        labels: deptLabels,
+        datasets: [{
+          label: "Requests",
+          data: deptValues,
+          backgroundColor: "#2563eb"
+        }]
+      },
+      options: {
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: {
+            ticks: { font: { size: 9 } },
+            grid: { display: false }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: { stepSize: 1, font: { size: 9 } }
+          }
+        }
+      }
+    });
+
+    urgencyChart = new Chart(urgCanvas, {
+      type: 'pie',
+      data: {
+        labels:["Urgent","Normal"],
+        datasets:[{
+          data:[urgent,normal],
+          backgroundColor:["#dc2626","#2563eb"]
+        }]
+      },
+      options: {
+        plugins: {
+          legend: {
+            position:'bottom',
+            labels:{font:{size:10}}
+          }
+        }
+      }
+    });
+  }
+
+  function renderDirectorList(){
+    const body=document.getElementById("directorBody");
+    if(!body || currentRole!=="director") {
+      return;
+    }
+    body.innerHTML="";
+
+    let today=(new Date()).toISOString().slice(0,10);
+    let list=allItems.filter(it=>it.recordType==="visit" && it.status==="approved" && it.date>=today);
+
+    if(!list.length){
+      body.innerHTML=`<tr><td colspan="3" class="empty-row">No upcoming visitors.</td></tr>`;
+      renderDirectorChartsAndKpis();
+      return;
+    }
+
+    list.sort((a,b)=> (a.date+" "+a.time).localeCompare(b.date+" "+b.time));
+
+    list.forEach(it=>{
+      const tr=document.createElement("tr");
+      tr.innerHTML = `
+        <td>${formatDateTime(it.date,it.time)}</td>
+        <td><strong>${it.name}</strong><br>${it.department}<br>
+            <span style="color:#999">${it.urgency}</span></td>
+        <td>${it.purpose}</td>`;
+      body.appendChild(tr);
+    });
+
+    renderDirectorChartsAndKpis();
+  }
+
+  function setupBlockControls(){
+    SLOT_LIST.forEach(t=>{
+      let o=document.createElement("option");
+      o.value=o.textContent=t;
+      document.getElementById("blockTime").appendChild(o);
+    });
+
+    document.getElementById("blockBtn").onclick=async()=>{
+      const date=document.getElementById("blockDate").value || currentDateKey;
+      const time=document.getElementById("blockTime").value;
+      const reason=document.getElementById("blockReason").value || "Not available";
+
+      if(!date||!time){ alert("Select date & time."); return; }
+
+      const res=await callApi({action:"blockSlot",date,time,reason});
+      if(res && res.success){
+        document.getElementById("blockMsg").style.display="block";
+        await loadAll();
+      } else {
+        console.error("blockSlot error",res);
+        alert("Failed to block slot: " + (res && res.error ? res.error : "Unknown error"));
+      }
+    };
+  }
+
+  function exportToExcel() {
+    if (!Array.isArray(allItems) || !allItems.length) {
+      alert("No data available to export.");
+      return;
+    }
+
+    const visits = allItems.filter(i => i.recordType === "visit");
+
+    if (!visits.length) {
+      alert("No visit records to export.");
+      return;
+    }
+
+    const rawData = visits.map(i => ({
+      Date: i.date || "",
+      Time: i.time || "",
+      Name: i.name || "",
+      Department: i.department || "",
+      Phone: i.phone || "",
+      Email: i.email || "",
+      Urgency: i.urgency || "",
+      Status: i.status || "",
+      Purpose: i.purpose || ""
+    }));
+    const rawSheet = XLSX.utils.json_to_sheet(rawData);
+
+    const statusCounts = {};
+    rawData.forEach(r => {
+      const key = r.Status || "Unknown";
+      statusCounts[key] = (statusCounts[key] || 0) + 1;
+    });
+    const statusArr = Object.entries(statusCounts).map(([Status, Count]) => ({ Status, Count }));
+    const statusSheet = XLSX.utils.json_to_sheet(statusArr);
+
+    const deptCounts = {};
+    rawData.forEach(r => {
+      const key = r.Department || "Unknown";
+      deptCounts[key] = (deptCounts[key] || 0) + 1;
+    });
+    const deptArr = Object.entries(deptCounts).map(([Department, Count]) => ({ Department, Count }));
+    const deptSheet = XLSX.utils.json_to_sheet(deptArr);
+
+    const monthCounts = {};
+    rawData.forEach(r => {
+      if (!r.Date) return;
+      const monthKey = r.Date.slice(0, 7);
+      monthCounts[monthKey] = (monthCounts[monthKey] || 0) + 1;
+    });
+    const monthArr = Object.entries(monthCounts).map(([Month, Count]) => ({ Month, Count }));
+    const monthSheet = XLSX.utils.json_to_sheet(monthArr);
+
+    const total = rawData.length;
+    const approved = rawData.filter(r => r.Status === "approved").length;
+    const pending = rawData.filter(r => r.Status === "pending").length;
+    const rejected = rawData.filter(r => r.Status === "rejected").length;
+    const urgent = rawData.filter(r => r.Urgency === "urgent").length;
+    const normal = rawData.filter(r => r.Urgency === "normal").length;
+
+    const summaryData = [
+      { Metric: "Total Requests", Value: total },
+      { Metric: "Approved", Value: approved },
+      { Metric: "Pending", Value: pending },
+      { Metric: "Rejected", Value: rejected },
+      { Metric: "Urgent", Value: urgent },
+      { Metric: "Normal", Value: normal }
+    ];
+    const summarySheet = XLSX.utils.json_to_sheet(summaryData);
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, summarySheet, "Summary");
+    XLSX.utils.book_append_sheet(wb, rawSheet, "RawData");
+    XLSX.utils.book_append_sheet(wb, statusSheet, "ByStatus");
+    XLSX.utils.book_append_sheet(wb, deptSheet, "ByDepartment");
+    XLSX.utils.book_append_sheet(wb, monthSheet, "ByMonth");
+
+    XLSX.writeFile(wb, "Director_Appointment_Analytics.xlsx");
+  }
+
+  document.addEventListener("DOMContentLoaded",async()=>{
+    setTodayDate();
+    setupRoleControls();
+    setupVisitorForm();
+    setupBlockControls();
+    await loadAll();
+
+    const dp=document.getElementById("datePicker");
+    if(dp){
+      dp.onchange=e=>{
+        currentDateKey=e.target.value;
+        renderSlots();
+      };
+    }
+
+    setRole("visitor");
   });
-}
-
-/* Init */
-document.addEventListener("DOMContentLoaded", async ()=>{
-  setTodayDate();
-  setupRoleControls();
-  setupVisitorForm();
-  setupBlockControls();
-  setupDirectorFilterControls();
-  await loadAll();
-  const dp = document.getElementById("datePicker");
-  if(dp) dp.addEventListener("change", (e)=>{ currentDateKey = e.target.value; renderSlots(); });
-  setRole("visitor");
-});
-
-// expose for onclick
-window.updateStatus = updateStatus;
-window.sendWhatsApp = sendWhatsApp;
 </script>
+
 </body>
 </html>
